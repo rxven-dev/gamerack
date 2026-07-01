@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="assets/css/loading-screen.css">
+    <script src="assets/js/loading-screen.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gamerack | Secure Publisher Gateway</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <style>
+        /* Modern Minimalistic Overrides for Professional Presentation */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .gateway-title {
+            font-size: 26px; 
+            font-weight: 700; 
+            letter-spacing: -0.5px; 
+            color: #ffffff; 
+            margin-bottom: 4px;
+        }
+        .gateway-subtitle {
+            font-size: 13px; 
+            font-weight: 400; 
+            color: #a1a1aa; 
+            letter-spacing: 0.2px;
+            margin: 0;
+        }
+        .input-group label {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            color: #a1a1aa !important;
+            margin-bottom: 8px !important;
+        }
+        .captcha-box {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .captcha-text {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: #f4f4f5;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 4px;
+            user-select: none;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+            min-width: 90px;
+            text-align: center;
+        }
+        .auth-switch {
+            font-size: 13px;
+            color: #71717a;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .auth-switch a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .auth-switch a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* 🔮 CUSTOM MATTE TOAST NOTIFICATIONS DESIGN */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .custom-toast {
+            background: linear-gradient(145deg, #121217, #181825);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.1);
+            color: #ffffff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 300px;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-toast.active {
+            transform: translateX(0);
+        }
+        .custom-toast.error {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+        .toast-close {
+            background: none;
+            border: none;
+            color: #a1a1aa;
+            cursor: pointer;
+            font-size: 16px;
+            padding-left: 12px;
+        }
+        .toast-close:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="liquid-bg">
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-box-wrapper" style="width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center;">
+            
+            <header class="auth-header" style="text-align: center; margin-bottom: 28px; width: 100%;">
+                <h1 class="gateway-title">Gamerack</h1>
+                <p class="gateway-subtitle">Secure Publisher Gateway</p>
+            </header>
+
+            <div class="auth-card active" id="loginCard">
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label>Email Account</label>
+                        <input type="email" placeholder="name@company.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Human Verification Challenge</label>
+                        <div class="captcha-box">
+                            <span class="captcha-text" id="captchaText"></span>
+                            <input type="text" id="captchaInput" placeholder="Verify Code" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="ios-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25); font-weight: 600; width: 100%; padding: 14px; border-radius: 12px; color: #fff; cursor: pointer;">
+                        Sign In
+                    </button>
+                    <p class="auth-switch">New to the Gamerack? <a href="#" id="toSignup">Create New Account</a></p>
+                </form>
+            </div>
+
+            <div class="auth-card" id="signupCard">
+                <form id="signupForm">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="e.g. Juan De La Cruz" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signupEmailInput" placeholder="name@company.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="ios-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25); font-weight: 600; width: 100%; padding: 14px; border-radius: 12px; color: #fff; cursor: pointer;">
+                        Create Account
+                    </button>
+                    <p class="auth-switch">Already registered? <a href="#" id="toLogin">Return to Login</a></p>
+                </form>
+            </div>
+
+            <div class="auth-card" id="verifyCard">
+                <div class="verify-header" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #fff; margin-bottom: 8px; font-weight: 600;">Verify Your Email</h3>
+                    <p style="font-size: 13px; color: #a1a1aa; line-height: 1.5;">A security code was sent to your inbox. Enter it below to authorize profile initialization.</p>
+                </div>
+                <form id="verifyForm">
+                    <div class="input-group" style="text-align: center;">
+                        <input type="text" id="verificationCodeInput" class="verification-input" maxlength="6" placeholder="000000" style="text-align: center; letter-spacing: 8px; font-size: 24px; font-weight: bold; background: rgba(255,255,255,0.06); border: 1px solid transparent; border-radius: 10px; padding: 12px; color: #fff;" required>
+                    </div>
+                    <button type="submit" class="ios-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; color: #fff; cursor: pointer;">Verify Identity</button>
+                </form>
+            </div>
+
+        </div> 
+    </div> 
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script type="module" src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/close-popup.js"></script>
+    <script>
+        // 2. Initialize EmailJS SDK
+        (function() {
+            emailjs.init("owB2XT75OBCwbGap4"); 
+        })();
+
+        const toSignup = document.getElementById('toSignup');
+        const toLogin = document.getElementById('toLogin');
+        const loginCard = document.getElementById('loginCard');
+        const signupCard = document.getElementById('signupCard');
+        const verifyCard = document.getElementById('verifyCard');
+        
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const verifyForm = document.getElementById('verifyForm');
+        
+        const captchaTextContainer = document.getElementById('captchaText');
+        const captchaInput = document.getElementById('captchaInput');
+        const signupEmailInput = document.getElementById('signupEmailInput');
+        const verificationCodeInput = document.getElementById('verificationCodeInput');
+        const toastContainer = document.getElementById('toastContainer');
+
+        let generatedCaptchaCode = "";
+        let activeEmailVerificationToken = "";
+
+        // 🌟 REPLACEMENT NOTIFICATION ENGINE FOR SYSTEM ALERTS
+        const showToast = (message, isError = false) => {
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${isError ? 'error' : ''}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button type="button" class="toast-close">×</button>
+            `;
+            toastContainer.appendChild(toast);
+            
+            // Trigger animation frame entry
+            setTimeout(() => toast.classList.add('active'), 50);
+
+            // Handler to clean up node automatically
+            const removeToast = () => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 400);
+            };
+
+            toast.querySelector('.toast-close').addEventListener('click', removeToast);
+            setTimeout(removeToast, 5000); // Auto expire after 5s
+        };
+
+        // View Shuffling hooks
+        toSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginCard.classList.remove('active');
+            signupCard.classList.add('active');
+        });
+
+        toLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupCard.classList.remove('active');
+            loginCard.classList.add('active');
+        });
+
+        // Captcha Routine Generators
+        const generateSystemCaptcha = () => {
+            const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; 
+            let result = "";
+            for (let i = 0; i < 4; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            generatedCaptchaCode = result;
+            if (captchaTextContainer) {
+                captchaTextContainer.textContent = generatedCaptchaCode;
+            }
+        };
+
+        // Sign In Form Submissions
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (captchaInput.value.trim().toUpperCase() !== generatedCaptchaCode) {
+                showToast("Security Verification Code Invalid. Please retry.", true);
+                generateSystemCaptcha();
+                captchaInput.value = "";
+                return;
+            }
+
+            localStorage.setItem("gamerack_authenticated", "true");
+
+            if (typeof triggerCentralSync === "function") {
+                triggerCentralSync("Authorizing Secure Identity Credentials", () => {
+                    window.location.href = 'index.html';
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // 3. Signup Form Handler - Dispatches EmailJS smoothly with custom toast popups
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const targetEmail = signupEmailInput.value.trim();
+            const secureToken = Math.floor(100000 + Math.random() * 900000).toString();
+            activeEmailVerificationToken = secureToken;
+
+            if (typeof triggerCentralSync === "function") {
+                triggerCentralSync("Dispatching Identity Verification Token...", async () => {
+                    try {
+                        const response = await emailjs.send(
+                            "service_zkre1sb",  
+                            "template_2qlbqr2", 
+                            {
+                                to_email: targetEmail,
+                                verification_code: secureToken
+                            }
+                        );
+
+                        if (response.status === 200) {
+                            showToast(`Verification token successfully sent to ${targetEmail}!`);
+                            signupCard.classList.remove('active');
+                            verifyCard.classList.add('active');
+                        } else {
+                            showToast("Email dispatch request failed during execution handler.", true);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showToast("An error occurred while connecting to the email gateway.", true);
+                    }
+                });
+            } else {
+                signupCard.classList.remove('active');
+                verifyCard.classList.add('active');
+            }
+        });
+
+        // 4. Code Checking Submissions Form
+        verifyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userInput = verificationCodeInput.value.trim();
+
+            if (userInput === activeEmailVerificationToken) {
+                localStorage.setItem("gamerack_authenticated", "true");
+                showToast("Identity confirmed! Access granted.");
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                showToast("Security handshake failed. Verification code mismatch.", true);
+            }
+        });
+
+        generateSystemCaptcha();
+    </script>
+</body>
+</html>

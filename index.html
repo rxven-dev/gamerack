@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gamerack | Publisher Control Center</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/top-bar.css">
+    <link rel="stylesheet" href="assets/css/side-bar.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/Overview.css">
+    <link rel="stylesheet" href="assets/css/Game-Catalog.css">
+    <link rel="stylesheet" href="assets/css/Sales-Analytics.css">
+    <link rel="stylesheet" href="assets/css/Developer-Profile.css">
+    <link rel="stylesheet" href="assets/css/System-Settings.css">
+    <link rel="stylesheet" href="assets/css/Checkout-Cart.css">
+    <link rel="stylesheet" href="assets/css/footer.css">
+    <link rel="stylesheet" href="assets/css/messenger.css">
+
+    <script>
+        if (localStorage.getItem("gamerack_authenticated") !== "true") {
+            window.location.replace("auth.html");
+        }
+    </script>
+</head>
+<body>
+    <link rel="stylesheet" href="assets/css/loading-screen.css">
+
+    <script src="assets/js/loading-screen.js"></script>
+    <div class="app-layout">
+        
+        <aside class="ios-sidebar">
+            <div class="sidebar-brand">
+                <span class="logo-icon">🛒</span> Gamerack
+            </div>
+            <nav class="sidebar-menu">
+                <button class="nav-item active" data-target="overview"><span class="icon">📊</span> Overview</button>
+                <button class="nav-item" data-target="catalog"><span class="icon">🎮</span> Game Catalog</button>
+                <button class="nav-item" data-target="analytics"><span class="icon">📈</span> Sales Analytics</button>
+                <button class="nav-item" data-target="developer"><span class="icon">👤</span> Profile Settings</button>
+                <button class="nav-item" data-target="settings"><span class="icon">⚙️</span> System Settings</button>
+                <button class="nav-item" data-target="cart"><span class="icon">🛍️</span> Checkout Cart <span class="badge" id="cartBadge">0</span></button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="ios-top-bar">
+                <div class="top-bar-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search..." id="dashboardSearch">
+                </div>
+
+                <div class="view-title"><h2 id="currentViewTitle">Overview</h2></div>
+                <div class="top-bar-actions">
+                    <select id="currencyChanger" class="ios-dropdown">
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="PHP">₱ PHP</option>
+                    </select>
+                    <div class="profile-pill">
+                        <span class="online-indicator"></span>
+                        <span id="topBarUser">Developer Console</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="viewport-wrapper">
+                
+                <section id="view-overview" class="view-pane active">
+                    <div class="dashboard-header-block" style="margin-bottom: 20px;">
+                        <h2 class="cyber-title">GAMERACK COMMAND</h2>
+                        <p class="cyber-subtext">
+                            <span class="pulse-dot">●</span> 
+                            <span class="status-tag">SECURE NODE ACTIVE</span> 
+                            <span class="divider">//</span> telemetry stream online
+                        </p>
+                    </div>
+                    
+                    <div class="grid-layout cols-3">
+                        <div class="ios-card glass">
+                            <h4>Gross Revenue</h4>
+                            <p class="stat-value" id="grossEarnings">$128,450.00</p>
+                            <span class="stat-trend up">+12.4% vs last month</span>
+                        </div>
+                        <div class="ios-card glass">
+                            <h4>Units Distributed</h4>
+                            <p class="stat-value" id="copiesSold">4,821</p>
+                            <span class="stat-trend up">+8.2% vs last month</span>
+                        </div>
+                        <div class="ios-card glass">
+                            <h4>Storefront Traffic</h4>
+                            <p class="stat-value">94.2K</p>
+                            <span class="stat-trend down">-1.1% vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="ios-card glass full-width" style="margin-top: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff;">Network Traffic Matrix</h3>
+                            <span style="font-family: monospace; font-size: 11px; color: var(--text-secondary);">BANDWIDTH UTILITY // 98.4% EFFICIENCY</span>
+                        </div>
+                        
+                        <div class="chart-container" style="position: relative; height: 320px; margin-top:20px;">
+                            <div class="matrix-tooltip" style="top: 88%; left: 3%;">Q1 Startup</div>
+                            <div class="matrix-tooltip" style="top: 48%; left: 50%;">Q2 Scaling</div>
+                            <div class="matrix-tooltip" style="top: 16%; left: 97%;">Q3 Peak</div>
+
+                            <svg viewBox="0 0 1000 250" class="analytics-svg-line" style="width:100%; height:100%; overflow: visible;">
+                                <defs>
+                                    <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(138, 92, 246, 0.3)"/>
+                                        <stop offset="50%" stop-color="rgba(59, 130, 246, 0.05)"/>
+                                        <stop offset="100%" stop-color="rgba(0, 0, 0, 0)"/>
+                                    </linearGradient>
+                                    
+                                    <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0%" stop-color="#3b82f6"/>
+                                        <stop offset="50%" stop-color="#8b5cf6"/>
+                                        <stop offset="100%" stop-color="#ec4899"/>
+                                    </linearGradient>
+
+                                    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="6" result="blur" />
+                                        <feMerge>
+                                            <feMergeNode in="blur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                <g stroke="rgba(255, 255, 255, 0.03)" stroke-width="1">
+                                    <line x1="0" y1="50" x2="1000" y2="50" stroke-dasharray="4 4" />
+                                    <line x1="0" y1="100" x2="1000" y2="100" stroke-dasharray="4 4" />
+                                    <line x1="0" y1="150" x2="1000" y2="150" stroke-dasharray="4 4" />
+                                    <line x1="0" y1="200" x2="1000" y2="200" stroke-dasharray="4 4" />
+                                </g>
+
+                                <path d="M 0 220 Q 250 180, 500 120 T 1000 40 L 1000 250 L 0 250 Z" fill="url(#chartGlow)" />
+                                <path d="M 0 220 Q 250 180, 500 120 T 1000 40" fill="none" stroke="url(#lineGradient)" stroke-width="4" stroke-linecap="round" filter="url(#neonGlow)" />
+
+                                <g class="matrix-node-group">
+                                    <circle cx="0" cy="220" r="14" class="node-pulse-ring" stroke="#3b82f6" />
+                                    <circle cx="0" cy="220" r="5" class="node-core-dot" fill="#3b82f6" />
+                                </g>
+
+                                <g class="matrix-node-group">
+                                    <circle cx="500" cy="120" r="14" class="node-pulse-ring" stroke="#8b5cf6" />
+                                    <circle cx="500" cy="120" r="5" class="node-core-dot" fill="#8b5cf6" />
+                                </g>
+
+                                <g class="matrix-node-group">
+                                    <circle cx="1000" cy="40" r="14" class="node-pulse-ring" stroke="#ec4899" />
+                                    <circle cx="1000" cy="40" r="5" class="node-core-dot" fill="#ec4899" />
+                                </g>
+                            </svg>
+                        </div>
+
+                        <div class="grid-layout cols-4" style="margin-top: 24px; gap: 16px;">
+                            <div class="ios-card glass" style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-family: monospace; color: var(--text-secondary);">NODE_US_EAST</span>
+                                <span style="font-size: 11px; font-weight:700; color: #10b981; text-shadow: 0 0 8px #10b981;">● OPERATIONAL</span>
+                            </div>
+                            <div class="ios-card glass" style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-family: monospace; color: var(--text-secondary);">NODE_EU_WEST</span>
+                                <span style="font-size: 11px; font-weight:700; color: #10b981; text-shadow: 0 0 8px #10b981;">● OPERATIONAL</span>
+                            </div>
+                            <div class="ios-card glass" style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-family: monospace; color: var(--text-secondary);">NODE_ASIA_SE</span>
+                                <span style="font-size: 11px; font-weight:700; color: #f59e0b; text-shadow: 0 0 8px #f59e0b;">▲ HIGH_LOAD</span>
+                            </div>
+                            <div class="ios-card glass" style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 12px; font-family: monospace; color: var(--text-secondary);">AUTH_SERVICE</span>
+                                <span style="font-size: 11px; font-weight:700; color: #10b981; text-shadow: 0 0 8px #10b981;">● SECURE</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-catalog" class="view-pane">
+                    <div class="catalog-controls">
+                        <h3>Game Catalog Collection</h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px; margin-bottom: 20px;">Complete visual distribution deployment matrix grid panels.</p>
+                    </div>
+                    <div class="grid-layout cols-3" id="catalogGrid"></div>
+                </section>
+
+                <section id="view-analytics" class="view-pane">
+                    <div class="catalog-controls" style="margin-bottom: 20px;">
+                        <h3>Quarterly Revenue Growth</h3>
+                    </div>
+                    <div class="ios-card glass full-width">
+                        <h3>Interactive Earnings Performance</h3>
+                        <div class="chart-container" style="position: relative; height: 250px; margin-top:20px;">
+                            <svg viewBox="0 0 1000 250" class="analytics-svg-line" style="width:100%; height:100%;">
+                                <defs>
+                                    <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(138, 92, 246, 0.25)"/>
+                                        <stop offset="100%" stop-color="rgba(138, 92, 246, 0.0)"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M 0 220 Q 250 180, 500 120 T 1000 40 L 1000 250 L 0 250 Z" fill="url(#chartGlow)" />
+                                <path d="M 0 220 Q 250 180, 500 120 T 1000 40" fill="none" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round" />
+                                <circle cx="0" cy="220" r="6" fill="#8b5cf6" />
+                                <circle cx="500" cy="120" r="6" fill="#8b5cf6" />
+                                <circle cx="1000" cy="40" r="6" fill="#8b5cf6" />
+                            </svg>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-developer" class="view-pane">
+                    <div class="catalog-controls" style="margin-bottom: 20px;">
+                        <h3 class="cyber-title">Developer Profile</h3>
+                        <p class="cyber-subtext">
+                            <span class="status-tag">SECURE ACCESS GRANTED</span> 
+                            <span class="divider">//</span> identity configuration module
+                        </p>
+                    </div>
+                    
+                    <div class="ios-card glass" style="margin-bottom: 24px; position: relative; overflow: hidden;">
+                        <div class="profile-header-meta" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px 0; position: relative; z-index: 2;">
+                            
+                            <div class="editable-avatar-container" style="position: relative; cursor: pointer;">
+                                <div id="avatarDisplay" class="avatar-lg" style="width: 110px; height: 110px; background: linear-gradient(135deg, #8b5cf6, #ec4899); background-size: cover; background-position: center; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: white; box-shadow: 0 0 25px rgba(138, 92, 246, 0.4); border: 2px solid rgba(255,255,255,0.1); overflow:hidden;">Dev</div>
+                                <div class="avatar-hover-overlay">⚙️ UPLOAD</div>
+                                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                            </div>
+
+                            <div style="width: 100%; max-width: 320px;">
+                                <input type="text" id="editProfName" value="Apex Studios" class="cyber-editable-input" placeholder="Organization Identity">
+                                <span style="background: rgba(138, 92, 246, 0.15); border: 1px solid rgba(138, 92, 246, 0.3); padding: 4px 14px; border-radius: 12px; font-size: 11px; font-family: monospace; color: #a78bfa; display: inline-block; margin-top: 8px;">ORG_ID // APX-9082</span>
+                                <input type="email" id="editProfEmail" value="admin@apexstudios.dev" class="cyber-editable-input email-input" placeholder="Secure Node Mail Contact">
+                                
+                                <button id="saveProfileBtn" class="terminal-copy-btn" style="margin-top: 14px; padding: 6px 18px; width: 100%; font-weight: 700; text-transform: uppercase;">Sync Identity Manifest</button>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; padding-top: 20px; text-align: center; position: relative; z-index: 2;">
+                            <div>
+                                <span style="font-size: 11px; font-family: monospace; color: var(--text-secondary); text-transform: uppercase;">Deployed Titles</span>
+                                <p style="font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 4px;">12 Active</p>
+                            </div>
+                            <div style="border-left: 1px solid rgba(255,255,255,0.05);"></div>
+                            <div>
+                                <span style="font-size: 11px; font-family: monospace; color: var(--text-secondary); text-transform: uppercase;">Global Reach</span>
+                                <p style="font-size: 20px; font-weight: 800; color: #3b82f6; margin-top: 4px;">2.4M Users</p>
+                            </div>
+                            <div style="border-left: 1px solid rgba(255,255,255,0.05);"></div>
+                            <div>
+                                <span style="font-size: 11px; font-family: monospace; color: var(--text-secondary); text-transform: uppercase;">Network Tier</span>
+                                <p style="font-size: 20px; font-weight: 800; color: #ec4899; margin-top: 4px;">Enterprise</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cropperOverlay" class="ios-popup-overlay" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
+                        <div class="ios-popup-sheet" style="max-width: 450px; width: 90%; background: #0d0a1a; border: 1px solid #8b5cf6;">
+                            <div class="popup-header">
+                                <h3>Adjust Asset Scaling Coordinates</h3>
+                                <button class="close-btn" id="closeCropperBtn">×</button>
+                            </div>
+                            <div class="popup-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                                <div class="crop-workspace-frame" style="width: 100%; height: 280px; background: #04020a; position: relative; overflow: hidden; border-radius: 8px; border: 1px dashed rgba(139, 92, 246, 0.4);">
+                                    <img id="cropPreviewImg" src="" style="position: absolute; cursor: move; transform-origin: top left; user-select: none; max-width: none;">
+                                    <div class="crop-target-lens" style="position: absolute; top: 50%; left: 50%; width: 160px; height: 160px; transform: translate(-50%, -50%); border-radius: 50%; box-shadow: 0 0 0 9999px rgba(4, 2, 10, 0.75); border: 2px solid #8b5cf6; pointer-events: none;">
+                                        <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.3); animation: nodePulseEffect 4s infinite linear;"></div>
+                                    </div>
+                                </div>
+                                <div style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-family: monospace; font-size: 11px; color: var(--text-secondary);">MATRIX SCALING SCALER</label>
+                                    <input type="range" id="cropZoomSlider" min="0.1" max="3" step="0.01" value="1" style="width: 100%; accent-color: #8b5cf6;">
+                                </div>
+                                <button id="applyCropBtn" class="ios-btn-primary" style="width: 100%; background: #8b5cf6;">Finalize Asset Initialization</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ios-card glass full-width" style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h4 style="font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">Publisher Access Credentials</h4>
+                            <span class="pulse-dot"></span>
+                        </div>
+                        
+                        <div class="api-credential-field">
+                            <div class="credential-label">Gamerack Client ID</div>
+                            <div class="credential-value-box">
+                                <code class="terminal-code">gr_live_client_7f29aa83e9ce6e95fbcbd</code>
+                                <button class="terminal-copy-btn" onclick="alert('Client ID Copied!')">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="api-credential-field" style="margin-top: 16px;">
+                            <div class="credential-label">Secure Webhook Secret</div>
+                            <div class="credential-value-box">
+                                <code class="terminal-code">••••••••••••••••••••••••••••••••••••••••</code>
+                                <button class="terminal-copy-btn">Reveal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ios-card glass full-width">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h4 style="font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase;">Incoming Webhook Stream</h4>
+                            <span style="font-family: monospace; font-size: 11px; color: #3b82f6; text-shadow: 0 0 6px rgba(59, 130, 246, 0.4);">STATUS // LISTENING ON PORT 443</span>
+                        </div>
+
+                        <div class="developer-terminal-logs" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; line-height: 1.8;">
+                            <div style="color: #64748b;"><span style="color: #10b981;">[SUCCESS]</span> <span style="color: #a78bfa;">POST</span> https://api.gamerack.dev/v1/telemetry - 200 OK (14ms)</div>
+                            <div style="color: #64748b;"><span style="color: #10b981;">[SUCCESS]</span> <span style="color: #3b82f6;">EVENT</span> checkout.session.completed -> Verified signature for ID: gr_ch_7f29aa</div>
+                            <div style="color: #64748b;"><span style="color: #10b981;">[SUCCESS]</span> <span style="color: #ec4899;">SYNC</span> Updated payload data cache for organization node: APX-9082</div>
+                            <div style="color: #a78bfa; animation: pulseText 1.5s infinite; margin-top: 4px;">&gt;_ Listening for incoming ping events from external storefront domains...</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-settings" class="view-pane">
+                    <div class="catalog-controls" style="margin-bottom: 24px;">
+                        <h3 class="cyber-title">System Configuration</h3>
+                        <p class="cyber-subtext">
+                            <span class="status-tag">CONFIG_MODE ACTIVE</span> 
+                            <span class="divider">//</span> control global storefront properties and communication alerts
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; align-items: start;">
+                        
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="ios-card glass" style="margin-bottom: 0;">
+                                <h4 style="font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                    <span>🎮</span> Storefront & Distribution Controls
+                                </h4>
+                                
+                                <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Public Storefront Visibility</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Make published game cards visible on the master user portal.</span>
+                                    </div>
+                                    <input type="checkbox" checked class="ios-switch">
+                                </div>
+
+                                <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Community Discussion Forums</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Allow users to start threads and write public reviews on your catalog.</span>
+                                    </div>
+                                    <input type="checkbox" checked class="ios-switch">
+                                </div>
+
+                                <div class="setting-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Default Build Deployment</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Select default launch parameters for deployed executables.</span>
+                                    </div>
+                                    <select class="ios-dropdown" style="padding: 6px 12px; background: #0c0a1c; border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; font-size: 12px; font-family: monospace;">
+                                        <option selected>STABLE_RELEASE</option>
+                                        <option>BETA_TESTING</option>
+                                        <option>ALPHA_MATRIX</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="ios-card glass" style="margin-bottom: 0;">
+                                <h4 style="font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                    <span>🔔</span> Notification Hub & Email Alerts
+                                </h4>
+                                
+                                <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Instant Sales Telemetry</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Email notifications the exact millisecond a copy is sold.</span>
+                                    </div>
+                                    <input type="checkbox" checked class="ios-switch">
+                                </div>
+
+                                <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Weekly Business Report</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Receive an automated PDF matrix breaking down revenue every Monday.</span>
+                                    </div>
+                                    <input type="checkbox" class="ios-switch">
+                                </div>
+
+                                <div class="setting-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Security Handshake Warnings</label>
+                                        <span style="color: var(--text-secondary); font-size: 11px;">Alert secure mailbox if a new device requests access keys.</span>
+                                    </div>
+                                    <input type="checkbox" checked class="ios-switch">
+                                </div>
+                            </div>
+
+                            <div class="ios-card glass" style="margin-bottom: 0; border: 1px solid rgba(239, 68, 68, 0.25); background: linear-gradient(to bottom right, rgba(20, 10, 15, 0.6), rgba(10, 5, 5, 0.7));">
+                                <h4 style="font-size: 13px; font-weight: 700; color: #f87171; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                    <span>⚠️</span> Active Session Management
+                                </h4>
+                                <p style="color: #cbd5e1; font-size: 12px; line-height: 1.6; margin-bottom: 20px;">
+                                    Instantly drop secure local authentication storage tokens, wipe system runtime contexts, and decouple this endpoint device workspace from the central platform relay.
+                                </p>
+                                
+                                <button id="systemSignoutBtn" class="terminal-copy-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; font-weight: 700; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
+                                    🔌 Disconnect System Node (Sign Out)
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section id="view-cart" class="view-pane">
+                    <div class="catalog-controls" style="margin-bottom: 20px;">
+                        <h3>Transactional Settlement</h3>
+                    </div>
+                    <div class="ios-card glass max-width-md">
+                        <h3>Your Cart Items</h3>
+                        <div id="cartItemsList">
+                            <p class="empty-msg">Your checkout list is clear.</p>
+                        </div>
+                        <hr class="ios-divider">
+                        <div class="cart-summary">
+                            <span>Grand Total:</span>
+                            <strong id="cartTotal">$0.00</strong>
+                        </div>
+                        <button class="ios-btn-primary" style="margin-top: 20px; width: 100%;">Authorize Settlement</button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="ios-popup-overlay" id="globalPopup">
+        <div class="ios-popup-sheet">
+            <div class="popup-header">
+                <h3 id="popupTitle">Product Details</h3>
+                <button class="close-btn" id="closePopupBtn">×</button>
+            </div>
+            <div class="popup-body" id="popupBody"></div>
+        </div>
+    </div>
+
+    <button class="nav-item hide-on-mobile" data-target="cart" style="display: none;"><span class="icon">🛍️</span> Checkout Cart <span class="badge js-cart-badge">0</span></button>
+
+    <button class="mobile-fab-cart js-nav-trigger" data-target="cart">
+        <span class="icon">🛍️</span>
+        <span class="badge js-cart-badge">0</span>
+    </button>
+
+    <script src="assets/js/gamesData.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/storefront.js"></script>
+    <script src="assets/js/add-cart.js"></script>
+    <script src="assets/js/cards-window.js"></script>
+    <script src="assets/js/close-popup.js"></script>
+    <script src="assets/js/currency-changer.js"></script>
+    <script src="assets/js/developer.js"></script>
+    <script src="assets/js/system-settings.js"></script>
+    <script src="assets/js/preferences.js"></script>
+    <script src="assets/js/salesAnalytics.js"></script>
+    <script src="assets/js/messenger.js"></script>
+    <script src="assets/js/footer.js"></script>
+
+</body>
+</html>

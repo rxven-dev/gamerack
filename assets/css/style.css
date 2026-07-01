@@ -1,0 +1,85 @@
+:root {
+    --bg-base: #000000;
+    --glass-bg: rgba(25, 25, 27, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-tint: #007AFF; /* Official iOS Blue */
+    --accent-tint-rgb: 0, 122, 255;
+    --text-primary: #FFFFFF;
+    --text-secondary: #8E8E93;
+    --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--system-font);
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Liquid Fluid Backgrounds Elements */
+.liquid-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background: #08080a;
+    overflow: hidden;
+}
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: floating 12s infinite alternate ease-in-out;
+}
+.blob1 {
+    width: 400px; height: 400px;
+    background: #0a4694;
+    top: -10%; left: -10%;
+}
+.blob2 {
+    width: 500px; height: 500px;
+    background: #1c0a35;
+    bottom: -10%; right: -10%;
+    animation-delay: -4s;
+}
+@keyframes floating {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 30px) scale(1.15); }
+}
+
+/* iOS Card Architecture */
+.ios-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+}
+
+/* Primary iOS Buttons */
+.ios-btn-primary {
+    background: var(--accent-tint);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ios-btn-primary:active {
+    transform: scale(0.97);
+    filter: brightness(0.9);
+}

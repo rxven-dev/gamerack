@@ -1,0 +1,74 @@
+/* ==========================================================================
+   ULTRA-PREMIUM CENTRAL DYNAMIC SYNC LOADER
+   ========================================================================== */
+.global-sync-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(8, 6, 16, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Floats over everything, including sidebars */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-sync-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Luminous Glass Pod Box */
+.sync-card {
+    background: rgba(18, 14, 32, 0.85);
+    border: 1px solid rgba(138, 92, 246, 0.25);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 
+                0 0 40px rgba(138, 92, 246, 0.1);
+    padding: 32px 48px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-sync-overlay.active .sync-card {
+    transform: scale(1);
+}
+
+/* Cyberpunk Spinner Ring */
+.sync-spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid rgba(255, 255, 255, 0.05);
+    border-top-color: #8a5cf6; /* Matches your core purple accent */
+    border-radius: 50%;
+    animation: cryptoSpin 0.8s linear infinite;
+}
+
+/* Centralized Toast Info Alert Text Tag */
+.sync-message {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sync-message span {
+    color: #f59e0b; /* Luminous amber lightning bolt tint */
+}
+
+@keyframes cryptoSpin {
+    to { transform: rotate(360deg); }
+}

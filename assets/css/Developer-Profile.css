@@ -1,0 +1,141 @@
+/* Components styles inside views */
+.setting-row {
+    display: flex; justify-content: space-between; align-items: center; padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ios-switch {
+    position: relative; width: 51px; height: 31px; -webkit-appearance: none;
+    appearance: none;
+    background: #3a3a3c; border-radius: 16px; outline: none; cursor: pointer; transition: 0.2s;
+}
+.ios-switch:checked { background: #34C759; }
+.ios-switch::before {
+    content: ''; position: absolute; width: 27px; height: 27px; border-radius: 50%;
+    top: 2px; left: 2px; background: #fff; transition: 0.2s;
+}
+.ios-switch:checked::before { transform: translateX(20px); }
+.ios-popup-overlay {
+    position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6);
+    display:none; align-items:center; justify-content:center; backdrop-filter:blur(10px); z-index:999;
+}
+.ios-popup-sheet {
+    background: #1c1c1e; width:90%; max-width:500px; border-radius:20px; padding:24px; border:1px solid var(--glass-border);
+}
+.popup-header { display:flex; justify-content:between; align-items:center; justify-content: space-between; margin-bottom: 16px;}
+.close-btn { background:none; border:none; color:#fff; font-size:24px; cursor:pointer;}
+
+/* --- High Tech Dev Console Fields --- */
+.api-credential-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.credential-label {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.credential-value-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terminal-code {
+    font-family: 'SF Mono', Consolas, 'Fira Code', monospace;
+    font-size: 13px;
+    color: #e2e8f0;
+    letter-spacing: 0.5px;
+}
+
+.terminal-copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a78bfa;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.terminal-copy-btn:hover {
+    background: rgba(138, 92, 246, 0.2);
+    border-color: rgba(138, 92, 246, 0.4);
+    color: #ffffff;
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* --- Interactive Avatar Photo Elements --- */
+.editable-avatar-container {
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.avatar-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 10, 26, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #a78bfa;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    border-radius: 50%;
+    pointer-events: none;
+    letter-spacing: 1px;
+}
+
+.editable-avatar-container:hover .avatar-hover-overlay {
+    opacity: 1;
+}
+
+/* --- High-Tech Terminal Inputs --- */
+.cyber-editable-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 10px 14px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    text-align: center;
+    border-radius: 6px;
+    margin-top: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.cyber-editable-input:focus {
+    border-color: rgba(138, 92, 246, 0.6) !important;
+    background: rgba(138, 92, 246, 0.05) !important;
+    box-shadow: 0 0 10px rgba(138, 92, 246, 0.2);
+}
+
+.cyber-editable-input.email-input {
+    font-size: 13px !important;
+    font-family: monospace !important;
+    font-weight: 400 !important;
+    color: var(--text-secondary) !important;
+    margin-top: 8px;
+}

@@ -1,0 +1,89 @@
+/* Components styles inside views */
+.setting-row {
+    display: flex; justify-content: space-between; align-items: center; padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ios-switch {
+    position: relative; width: 51px; height: 31px; -webkit-appearance: none;
+    appearance: none;
+    background: #3a3a3c; border-radius: 16px; outline: none; cursor: pointer; transition: 0.2s;
+}
+.ios-switch:checked { background: #34C759; }
+.ios-switch::before {
+    content: ''; position: absolute; width: 27px; height: 27px; border-radius: 50%;
+    top: 2px; left: 2px; background: #fff; transition: 0.2s;
+}
+.ios-switch:checked::before { transform: translateX(20px); }
+.ios-popup-overlay {
+    position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6);
+    display:none; align-items:center; justify-content:center; backdrop-filter:blur(10px); z-index:999;
+}
+.ios-popup-sheet {
+    background: #1c1c1e; width:90%; max-width:500px; border-radius:20px; padding:24px; border:1px solid var(--glass-border);
+}
+.popup-header { display:flex; justify-content:between; align-items:center; justify-content: space-between; margin-bottom: 16px;}
+.close-btn { background:none; border:none; color:#fff; font-size:24px; cursor:pointer;}
+
+/* --- High-Tech Balanced Matrix Data Labels --- */
+.matrix-tooltip {
+    position: absolute;
+    /* This forces the element to calculate its center axis automatically */
+    transform: translate(-50%, -100%); 
+    background: rgba(13, 10, 26, 0.85);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 
+                0 0 12px rgba(138, 92, 246, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+/* --- Interactive Pulsing Nodes --- */
+.matrix-node-group {
+    cursor: pointer;
+}
+
+.matrix-node-group:hover .node-core-dot {
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.node-core-dot {
+    transform-origin: center;
+    transition: transform 0.2s ease;
+}
+
+.node-pulse-ring {
+    fill: none;
+    stroke-width: 1.5;
+    transform-origin: center;
+    opacity: 0;
+    animation: nodePulseEffect 2.5s infinite linear;
+}
+
+/* Stagger animation loops for separate nodes */
+.matrix-node-group:nth-child(2) .node-pulse-ring { animation-delay: 0.8s; }
+.matrix-node-group:nth-child(3) .node-pulse-ring { animation-delay: 1.6s; }
+
+@keyframes nodePulseEffect {
+    0% {
+        transform: scale(0.3);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}

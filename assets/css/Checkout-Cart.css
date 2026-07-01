@@ -1,0 +1,7 @@
+/* Ensure the empty message looks elegant on all screens */
+.empty-msg {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 40px 0;
+    font-size: 15px;
+}

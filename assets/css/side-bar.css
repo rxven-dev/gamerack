@@ -1,0 +1,78 @@
+.ios-sidebar {
+    /* Tighten the width from 260px down to clean console dimensions */
+    width: 240px; 
+    height: 100vh;
+    background: rgba(10, 8, 16, 0.5);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-right: 1px solid var(--glass-border);
+    /* Tighter padding to give content room to breathe */
+    padding: 24px 16px; 
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-brand {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff, var(--text-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /* Clean spacing alignment below logo */
+    margin-bottom: 32px;
+    padding-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Perfectly uniform space between buttons */
+}
+
+.nav-item {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    /* Slimmer internal row padding to match the reference style */
+    padding: 10px 14px; 
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    text-align: left;
+}
+
+.nav-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-item.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--accent-neon), var(--accent-blue));
+    box-shadow: 0 4px 15px -4px rgba(138, 92, 246, 0.4);
+    font-weight: 600;
+}
+
+/* Tighter style for notifications indicator badges inside buttons */
+.nav-item .badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+}

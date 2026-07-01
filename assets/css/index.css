@@ -1,0 +1,174 @@
+/* --- Core Engine Style Variables --- */
+:root {
+    --bg-cosmic: radial-gradient(circle at 80% 20%, #1a1235 0%, #0d0b14 60%, #050409 100%);
+    --glass-card: rgba(20, 18, 30, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --glass-glow: rgba(138, 92, 246, 0.15);
+    --text-primary: #f3f1f6;
+    --text-secondary: #9894ab;
+    --accent-neon: #8b5cf6; /* Cyber Purple */
+    --accent-blue: #3b82f6;
+}
+
+/* --- App Canvas --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background: var(--bg-cosmic);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.app-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* --- Main Display Engine --- */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    /* Animated subtle background mesh glow */
+    background: radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+}
+
+.viewport-wrapper {
+    flex: 1;
+    padding: 24px; /* Clean, even margins all around */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    /* CHANGE THIS TO 16px or 20px now that the top bar isn't floating over it! */
+    margin-top: 20px; 
+    
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* --- Premium Glassmorphism Cards --- */
+.ios-card.glass {
+    background: var(--glass-card);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+}
+
+.ios-card.glass:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 45px -5px rgba(138, 92, 246, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+    border-color: rgba(138, 92, 246, 0.3);
+}
+
+/* --- Grid Metrics --- */
+.grid-layout {
+    display: grid;
+    gap: 28px;
+    width: 100%;
+}
+
+.cols-3 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* --- Typography & Stats Styling --- */
+h4 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #ffffff;
+    margin-bottom: 8px;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.stat-trend {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.stat-trend.up {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.stat-trend.down {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+/* ==========================================================================
+   VIEW MASK ENGINE: This cleanly isolates your sidebar tabs 
+   ========================================================================== */
+
+/* 1. Hide every single view pane by default */
+.view-pane {
+    display: none !important;
+    width: 100%;
+}
+
+/* 2. ONLY show the view pane that has the active class from your JavaScript */
+.view-pane.active {
+    display: block !important;
+}
+
+/* ==========================================================================
+   DYNAMIC GLASS TOAST ALERTS SYSTEM
+   ========================================================================== */
+.toast-notification {
+    background: rgba(18, 14, 32, 0.75);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(138, 92, 246, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    padding: 14px 24px;
+    border-radius: 12px;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999; /* Forces it to hover on top of absolutely everything else */
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+    animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+    0% {
+        transform: translateY(40px) scale(0.92);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}

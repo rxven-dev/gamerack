@@ -1,0 +1,100 @@
+.stat-value { font-size: 36px; font-weight: 700; margin: 12px 0 4px 0; letter-spacing: -1px; }
+.stat-trend { font-size: 13px; font-weight: 600; }
+.stat-trend.up { color: #34C759; }
+.stat-trend.down { color: #FF3B30; }
+
+.ios-card.glass {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.ios-card.glass:hover {
+    transform: translateY(-2px);
+    border-color: rgba(138, 92, 246, 0.25); /* Subtle cyber purple border highlight */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 
+                0 0 20px rgba(138, 92, 246, 0.1); /* Soft backglow */
+}
+
+/* --- High-Tech Header Text --- */
+.cyber-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #ffffff; /* Fallback for older browsers */
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    
+    /* The 3 lines needed to make the gradient text clip work perfectly: */
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent; 
+}
+/* --- Terminal Style Subtext --- */
+.cyber-subtext {
+    font-family: 'SF Mono', Consolas, 'Fira Code', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- Neon Status Accent Line --- */
+.status-tag {
+    color: #a78bfa; /* Soft luminous violet */
+    font-weight: 600;
+}
+
+.divider {
+    color: rgba(255, 255, 255, 0.15);
+}
+
+.pulse-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #10b981; /* High-grade cyber green */
+    border-radius: 50%;
+    margin-right: 4px;
+    box-shadow: 0 0 8px #10b981, 0 0 16px #10b981; /* Smooth neon bloom glow */
+    animation: terminalPulse 2s infinite ease-in-out;
+}
+
+@keyframes terminalPulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(0.92);
+        box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+        box-shadow: 0 0 12px #10b981, 0 0 20px #10b981;
+    }
+}
+
+/* Container wrap for your newly added node status rows */
+.node-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+/* Individual node style enhancement */
+.node-row-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding: 14px 20px !important;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s ease, border 0.2s ease;
+}
+
+.node-row-card:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(139, 92, 246, 0.2) !important; /* Subtle purple hover edge */
+}

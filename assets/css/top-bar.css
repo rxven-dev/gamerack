@@ -1,0 +1,162 @@
+/* ==========================================================================
+   ULTRA-PREMIUM FLOATING CAPSULE TOP BAR
+   ========================================================================== */
+.ios-top-bar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    height: 60px; /* Slimmer profile for a high-tech dock feel */
+    
+    /* Premium Liquid Glass Backdrop */
+    background: rgba(15, 12, 28, 0.4);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    
+    /* Thin luminous outer boundary ring */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px; /* Smooth rounded pill corners */
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 90;
+    
+    /* Subtle internal depth shadow dropped onto container elements below */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Dynamic Dynamic Active Title --- */
+.view-title h2 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+    text-transform: capitalize;
+}
+
+/* --- Action Controls Alignment Block --- */
+.top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* --- Redesigned Glass Currency Selector Dropdown --- */
+.ios-dropdown {
+    background: rgba(255, 255, 255, 0.04);
+    color: #f3f1f6;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.ios-dropdown:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(138, 92, 246, 0.4);
+}
+
+.ios-dropdown option {
+    background: #0d0b14; /* Solid color drop safety list panel items background */
+    color: #ffffff;
+}
+
+/* --- Premium Interactive Profile Module --- */
+.profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(138, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+    border: 1px solid rgba(138, 92, 246, 0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-pill:hover {
+    background: linear-gradient(135deg, rgba(138, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+    border-color: rgba(138, 92, 246, 0.5);
+    box-shadow: 0 0 12px rgba(138, 92, 246, 0.2);
+}
+
+#topBarUser {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f3f1f6;
+}
+
+/* --- Glowing Pulse Live Connection Indicator --- */
+.online-indicator {
+    width: 7px;
+    height: 7px;
+    background-color: #10b981; /* Neon Green */
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 8px #10b981;
+}
+
+/* Breathing live heartbeats ping animation wrapper */
+.online-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%;
+    background-color: #10b981;
+    animation: indicatorPulse 2s infinite ease-in-out;
+}
+
+@keyframes indicatorPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.8); opacity: 0; }
+}
+
+.top-bar-search {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 14px;
+    border-radius: 10px;
+    width: 260px; /* Perfect width to fill that left side zone balance */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-bar-search:focus-within {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(138, 92, 246, 0.5); /* Cyber Purple Glow on Focus */
+    box-shadow: 0 0 12px rgba(138, 92, 246, 0.15);
+    width: 290px; /* Smoothly expands slightly when you click it */
+}
+
+.top-bar-search .search-icon {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-right: 10px;
+    user-select: none;
+}
+
+.top-bar-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.top-bar-search input::placeholder {
+    color: rgba(152, 148, 171, 0.6);
+}
+

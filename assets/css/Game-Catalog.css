@@ -1,0 +1,12 @@
+.catalog-item-card {
+    cursor: pointer;
+}
+.catalog-item-card img {
+    width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-bottom: 12px;
+}
+.catalog-item-card h4 { font-size: 18px; margin-bottom: 6px; }
+.catalog-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+
+.catalog-item-card {
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
