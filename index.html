@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Gamerack | Publisher Control Center</title>
+    <title>Gamerack | Control Center</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/top-bar.css">
     <link rel="stylesheet" href="assets/css/side-bar.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="assets/css/messenger.css">
 
     <script>
+        // Security Gate: Redirect users immediately to registration if they have no active login credentials
         if (localStorage.getItem("gamerack_authenticated") !== "true") {
             window.location.replace("auth.html");
         }
@@ -25,8 +26,8 @@
 </head>
 <body>
     <link rel="stylesheet" href="assets/css/loading-screen.css">
-
     <script src="assets/js/loading-screen.js"></script>
+    
     <div class="app-layout">
         
         <aside class="ios-sidebar">
@@ -59,7 +60,7 @@
                     </select>
                     <div class="profile-pill">
                         <span class="online-indicator"></span>
-                        <span id="topBarUser">Developer Console</span>
+                        <span id="topBarUser">Loading Account...</span>
                     </div>
                 </div>
             </header>
@@ -112,13 +113,11 @@
                                         <stop offset="50%" stop-color="rgba(59, 130, 246, 0.05)"/>
                                         <stop offset="100%" stop-color="rgba(0, 0, 0, 0)"/>
                                     </linearGradient>
-                                    
                                     <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
                                         <stop offset="0%" stop-color="#3b82f6"/>
                                         <stop offset="50%" stop-color="#8b5cf6"/>
                                         <stop offset="100%" stop-color="#ec4899"/>
                                     </linearGradient>
-
                                     <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
                                         <feGaussianBlur stdDeviation="6" result="blur" />
                                         <feMerge>
@@ -127,27 +126,22 @@
                                         </feMerge>
                                     </filter>
                                 </defs>
-
                                 <g stroke="rgba(255, 255, 255, 0.03)" stroke-width="1">
                                     <line x1="0" y1="50" x2="1000" y2="50" stroke-dasharray="4 4" />
                                     <line x1="0" y1="100" x2="1000" y2="100" stroke-dasharray="4 4" />
                                     <line x1="0" y1="150" x2="1000" y2="150" stroke-dasharray="4 4" />
                                     <line x1="0" y1="200" x2="1000" y2="200" stroke-dasharray="4 4" />
                                 </g>
-
                                 <path d="M 0 220 Q 250 180, 500 120 T 1000 40 L 1000 250 L 0 250 Z" fill="url(#chartGlow)" />
                                 <path d="M 0 220 Q 250 180, 500 120 T 1000 40" fill="none" stroke="url(#lineGradient)" stroke-width="4" stroke-linecap="round" filter="url(#neonGlow)" />
-
                                 <g class="matrix-node-group">
                                     <circle cx="0" cy="220" r="14" class="node-pulse-ring" stroke="#3b82f6" />
                                     <circle cx="0" cy="220" r="5" class="node-core-dot" fill="#3b82f6" />
                                 </g>
-
                                 <g class="matrix-node-group">
                                     <circle cx="500" cy="120" r="14" class="node-pulse-ring" stroke="#8b5cf6" />
                                     <circle cx="500" cy="120" r="5" class="node-core-dot" fill="#8b5cf6" />
                                 </g>
-
                                 <g class="matrix-node-group">
                                     <circle cx="1000" cy="40" r="14" class="node-pulse-ring" stroke="#ec4899" />
                                     <circle cx="1000" cy="40" r="5" class="node-core-dot" fill="#ec4899" />
@@ -280,7 +274,6 @@
                             <h4 style="font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">Publisher Access Credentials</h4>
                             <span class="pulse-dot"></span>
                         </div>
-                        
                         <div class="api-credential-field">
                             <div class="credential-label">Gamerack Client ID</div>
                             <div class="credential-value-box">
@@ -288,7 +281,6 @@
                                 <button class="terminal-copy-btn" onclick="alert('Client ID Copied!')">Copy</button>
                             </div>
                         </div>
-
                         <div class="api-credential-field" style="margin-top: 16px;">
                             <div class="credential-label">Secure Webhook Secret</div>
                             <div class="credential-value-box">
@@ -303,7 +295,6 @@
                             <h4 style="font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase;">Incoming Webhook Stream</h4>
                             <span style="font-family: monospace; font-size: 11px; color: #3b82f6; text-shadow: 0 0 6px rgba(59, 130, 246, 0.4);">STATUS // LISTENING ON PORT 443</span>
                         </div>
-
                         <div class="developer-terminal-logs" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 16px; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; line-height: 1.8;">
                             <div style="color: #64748b;"><span style="color: #10b981;">[SUCCESS]</span> <span style="color: #a78bfa;">POST</span> https://api.gamerack.dev/v1/telemetry - 200 OK (14ms)</div>
                             <div style="color: #64748b;"><span style="color: #10b981;">[SUCCESS]</span> <span style="color: #3b82f6;">EVENT</span> checkout.session.completed -> Verified signature for ID: gr_ch_7f29aa</div>
@@ -323,13 +314,11 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; align-items: start;">
-                        
                         <div style="display: flex; flex-direction: column; gap: 24px;">
                             <div class="ios-card glass" style="margin-bottom: 0;">
                                 <h4 style="font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                                     <span>🎮</span> Storefront & Distribution Controls
                                 </h4>
-                                
                                 <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Public Storefront Visibility</label>
@@ -337,7 +326,6 @@
                                     </div>
                                     <input type="checkbox" checked class="ios-switch">
                                 </div>
-
                                 <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Community Discussion Forums</label>
@@ -345,7 +333,6 @@
                                     </div>
                                     <input type="checkbox" checked class="ios-switch">
                                 </div>
-
                                 <div class="setting-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Default Build Deployment</label>
@@ -365,7 +352,6 @@
                                 <h4 style="font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                                     <span>🔔</span> Notification Hub & Email Alerts
                                 </h4>
-                                
                                 <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Instant Sales Telemetry</label>
@@ -373,7 +359,6 @@
                                     </div>
                                     <input type="checkbox" checked class="ios-switch">
                                 </div>
-
                                 <div class="setting-row" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Weekly Business Report</label>
@@ -381,7 +366,6 @@
                                     </div>
                                     <input type="checkbox" class="ios-switch">
                                 </div>
-
                                 <div class="setting-row" style="display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <label style="color: #fff; font-size: 13px; display: block; margin-bottom: 4px;">Security Handshake Warnings</label>
@@ -398,13 +382,11 @@
                                 <p style="color: #cbd5e1; font-size: 12px; line-height: 1.6; margin-bottom: 20px;">
                                     Instantly drop secure local authentication storage tokens, wipe system runtime contexts, and decouple this endpoint device workspace from the central platform relay.
                                 </p>
-                                
                                 <button id="systemSignoutBtn" class="terminal-copy-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; font-weight: 700; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;">
                                     🔌 Disconnect System Node (Sign Out)
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </section>
 
@@ -461,5 +443,30 @@
     <script src="assets/js/messenger.js"></script>
     <script src="assets/js/footer.js"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Read registration storage keys
+            const sessionName = localStorage.getItem('logged_in_username') || "Gamerack Profile";
+            
+            // Sync top bar indicator profile widget with the true user's name
+            const topBarNode = document.getElementById('topBarUser');
+            if (topBarNode) {
+                topBarNode.textContent = sessionName;
+            }
+
+            // Sync structural editable input element on the Profile Settings view
+            const profileInputNode = document.getElementById('editProfName');
+            if (profileInputNode && !localStorage.getItem('profile_manually_edited')) {
+                profileInputNode.value = sessionName;
+            }
+
+            // Sync text inside the profile badge circle node if available
+            const avatarDisplayNode = document.getElementById('avatarDisplay');
+            if (avatarDisplayNode && !localStorage.getItem('custom_avatar_attached')) {
+                const initialText = sessionName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                avatarDisplayNode.textContent = initialText || "GR";
+            }
+        });
+    </script>
 </body>
 </html>

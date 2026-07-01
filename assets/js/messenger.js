@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const body = document.body;
 
     // 1. DYNAMIC ACCOUNT DETECTION SYSTEM
-    // Replace these fallbacks with your actual website's login session variables if needed!
     const sessionUserId = localStorage.getItem('logged_in_user_id') || sessionStorage.getItem('user_id') || 'USER_' + Math.floor(Math.random() * 90000 + 10000);
     const sessionUserName = localStorage.getItem('logged_in_username') || sessionStorage.getItem('username') || "Admin Console";
     
@@ -66,11 +65,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderContactsPage() {
         userListContainer.innerHTML = '';
         
-        if (liveOnlineUsers.length === 0) {
+        // CRITICAL FILTER: Strip out anyone that matches your exact user profile ID or name
+        const filteredUsers = liveOnlineUsers.filter(user => user.id !== sessionUserId && user.name !== sessionUserName);
+        
+        if (filteredUsers.length === 0) {
             userListContainer.innerHTML = `
                 <div style="padding: 20px 16px; color: #64748b; font-size: 12px; text-align: center; line-height: 1.4;">
                     ● You are the only user online<br>
-                    <span style="font-size: 11px; opacity: 0.6;">Log in with another account in a new window to test!</span>
+                    <span style="font-size: 11px; opacity: 0.6;">Waiting for other registered users...</span>
                 </div>
             `;
             chatHistoryContainer.innerHTML = `
@@ -89,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        liveOnlineUsers.forEach(user => {
+        filteredUsers.forEach(user => {
             const row = document.createElement('div');
             row.className = `user-row ${currentlySelectedUser && user.id === currentlySelectedUser.id ? 'active' : ''}`;
             row.innerHTML = `
@@ -155,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     networkBus.onmessage = (event) => {
         const payload = event.data;
 
-        // CRITICAL GUARD: Completely ignore messages originating from this exact user
+        // CRITICAL GUARD: Completely ignore messages originating from this exact user instance
         if (payload.id === sessionUserId || payload.senderId === sessionUserId) return;
 
         if (payload.type === 'PING_PRESENCE') {
@@ -191,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function registerOnlineUser(id, name, initial) {
-        if (id === sessionUserId) return; 
+        if (id === sessionUserId || name === sessionUserName) return; 
         if (!liveOnlineUsers.some(u => u.id === id)) {
             liveOnlineUsers.push({ id, name, initial, messages: [] });
             renderContactsPage();
