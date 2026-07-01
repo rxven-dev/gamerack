@@ -445,8 +445,13 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Read registration storage keys
-            const sessionName = localStorage.getItem('logged_in_username') || "Gamerack Profile";
+            // 1. Fetch the unique id of the current logged-in profile slot
+            const currentUserId = localStorage.getItem('logged_in_user_id') || 'GUEST_DEFAULT';
+            
+            // 2. Load the settings specific to this user profile context
+            const sessionName = localStorage.getItem(`profile_name_${currentUserId}`) || localStorage.getItem('logged_in_username') || "Gamerack Profile";
+            const sessionEmail = localStorage.getItem(`profile_email_${currentUserId}`) || "admin@apexstudios.dev";
+            const sessionAvatar = localStorage.getItem(`profile_avatar_${currentUserId}`);
             
             // Sync top bar indicator profile widget with the true user's name
             const topBarNode = document.getElementById('topBarUser');
@@ -456,15 +461,26 @@
 
             // Sync structural editable input element on the Profile Settings view
             const profileInputNode = document.getElementById('editProfName');
-            if (profileInputNode && !localStorage.getItem('profile_manually_edited')) {
+            if (profileInputNode) {
                 profileInputNode.value = sessionName;
             }
+            
+            const profileEmailNode = document.getElementById('editProfEmail');
+            if (profileEmailNode) {
+                profileEmailNode.value = sessionEmail;
+            }
 
-            // Sync text inside the profile badge circle node if available
+            // Sync text or background asset matrix inside the profile badge circle node
             const avatarDisplayNode = document.getElementById('avatarDisplay');
-            if (avatarDisplayNode && !localStorage.getItem('custom_avatar_attached')) {
-                const initialText = sessionName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                avatarDisplayNode.textContent = initialText || "GR";
+            if (avatarDisplayNode) {
+                if (sessionAvatar) {
+                    avatarDisplayNode.style.backgroundImage = `url(${sessionAvatar})`;
+                    avatarDisplayNode.textContent = ""; 
+                } else {
+                    avatarDisplayNode.style.backgroundImage = "none";
+                    const initialText = sessionName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    avatarDisplayNode.textContent = initialText || "GR";
+                }
             }
         });
     </script>
