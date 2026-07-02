@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Prepare live synchronized registry arrays
     let liveOnlineUsers = [];
     let currentlySelectedUser = null;
+    let targetMessageIdForGlobalPicker = null; // Keeps track of which message the full grid picker belongs to
 
     // Generate Perfect Round Circle Launcher Node
     const launcher = document.createElement('div');
@@ -41,11 +42,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const panel = document.createElement('div');
     panel.className = 'messenger-panel';
-panel.innerHTML = `
+    panel.innerHTML = `
         <div class="msg-sidebar">
             <div class="msg-sidebar-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <span>Core Applications</span>
+                <div id="sidebarBackToAppsBtn" style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: #8b5cf6; font-size: 12px; font-weight: 600; user-select: none;">
+                    <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                    <span>← Back to Apps</span>
                 </div>
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;">Chat Desk</span>
+            </div>
             <div class="sidebar-page-tab">
                 <svg style="width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
@@ -59,7 +66,7 @@ panel.innerHTML = `
             <div class="chat-header" id="msgChatTargetName" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="mobile-back-action" id="mobileChatBackBtn">
-                        <svg viewBox="0 0 24 24" fill="none; stroke:currentColor; stroke-width:2.5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                         </svg>
                     </div>
@@ -67,16 +74,29 @@ panel.innerHTML = `
                 </div>
                 <div class="header-close-icon-btn" id="chatCloseXBtn" title="Close Window">✕</div>
             </div>
+            
             <div class="chat-history" id="msgChatHistory"></div>
+            
+            <div class="floating-emoji-picker-panel" id="msgEmojiPickerPanel">
+                <div class="emoji-picker-title" id="msgEmojiPickerTitle">Expressions</div>
+                <div class="emoji-picker-grid" id="msgEmojiPickerGrid"></div>
+            </div>
+
             <div class="chat-input-row" style="opacity: 0.5; pointer-events: none;" id="msgInputRow">
-                <button class="chat-attach-btn" id="msgAttachBtn" title="Upload Image" style="background:none; border:none; color:#64748b; cursor:pointer; padding:0 4px; display:flex; align-items:center;">
+                <button class="chat-attach-btn" id="msgAttachBtn" title="Upload Image" style="background:none; border:none; color:#64748b; cursor:pointer; padding:0 2px; display:flex; align-items:center;">
                     <svg style="width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                     </svg>
                 </button>
                 <input type="file" id="msgFileInput" accept="image/*" style="display: none;">
                 
-                <input type="text" id="msgInputField" placeholder="Select an online user to chat..." disabled>
+                <button class="chat-emoji-trigger-btn" id="msgEmojiToggleBtn" title="Insert Emoji">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M12 18.75a6.75 6.75 0 1 0 0-13.5 6.75 6.75 0 0 0 0 13.5ZM9.75 9.75h.008v.008H9.75V9.75Zm4.5 0h.008v.008h-.008V9.75Z" />
+                    </svg>
+                </button>
+                
+                <input type="text" id="msgInputField" placeholder="Select an online user to chat..." disabled autocomplete="off">
                 <button class="chat-send-btn" id="msgSendBtn" disabled>Send</button>
             </div>
         </div>
@@ -84,26 +104,6 @@ panel.innerHTML = `
 
     body.appendChild(launcher);
     body.appendChild(panel);
-
-    // CSS Injector extension for reaction pills and utility modules
-    const styleSheet = document.createElement("style");
-    styleSheet.innerText = `
-        .chat-bubble-wrapper { position: relative; display: flex; flex-direction: column; max-width: 75%; margin-bottom: 4px; }
-        .chat-bubble-wrapper.outgoing { align-self: flex-end; }
-        .chat-bubble-wrapper.incoming { align-self: flex-start; }
-        .reaction-trigger-panel { display: none; position: absolute; top: -28px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2px 6px; gap: 4px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .chat-bubble-wrapper:hover .reaction-trigger-panel { display: flex; }
-        .chat-bubble-wrapper.outgoing .reaction-trigger-panel { right: 0; }
-        .chat-bubble-wrapper.incoming .reaction-trigger-panel { left: 0; }
-        .react-emoji-btn { background: none; border: none; padding: 0 2px; cursor: pointer; font-size: 14px; transition: transform 0.1s; }
-        .react-emoji-btn:hover { transform: scale(1.3); }
-        .bubble-reaction-badge { position: absolute; bottom: -10px; background: #2a2b3d; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1px 5px; font-size: 11px; display: flex; gap: 2px; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 5; }
-        .chat-bubble-wrapper.outgoing .bubble-reaction-badge { right: 10px; }
-        .chat-bubble-wrapper.incoming .bubble-reaction-badge { left: 10px; }
-        .chat-attached-img { max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 4px; display: block; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-        .chat-attach-btn:hover { color: #8b5cf6 !important; }
-    `;
-    document.head.appendChild(styleSheet);
 
     const userListContainer = document.getElementById('msgUserList');
     const chatHistoryContainer = document.getElementById('msgChatHistory');
@@ -113,8 +113,91 @@ panel.innerHTML = `
     const inputRow = document.getElementById('msgInputRow');
     const fileInput = document.getElementById('msgFileInput');
     const attachButton = document.getElementById('msgAttachBtn');
+    
+    const emojiToggleBtn = document.getElementById('msgEmojiToggleBtn');
+    const emojiPickerPanel = document.getElementById('msgEmojiPickerPanel');
+    const emojiPickerGrid = document.getElementById('msgEmojiPickerGrid');
+    const emojiPickerTitle = document.getElementById('msgEmojiPickerTitle');
 
-    // 2. Initialize Real-Time Presence Telemetry Channel (TRUE ACCURATE DB SESSIONS)
+    // Apple/Twemoji Character Code Point Resolver Utility (Strips hidden 'fe0f' flags)
+    function getEmojiHex(emoji) {
+        return Array.from(emoji)
+            .map(char => char.codePointAt(0).toString(16))
+            .filter(hex => hex !== 'fe0f')
+            .join('-');
+    }
+
+    // Floating Picker Dictionary List Array
+    const emojiDictionaryList = [
+        '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗',
+        '😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟',
+        '😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶',
+        '😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧',
+        '😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈',
+        '👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽',
+        '👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👌','🤏','👈','👉','👆','👇','☝️','✋',
+        '🤚','🖐️','🖖','👋','🤙','💪','🦾','🖕','✍️','🙏','🤝','❤️','🧡','💛','💚','💙','💜','🖤',
+        '🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','🌟','🔥','✨','🎉'
+    ];
+
+    // Mini Bubble Shortcut Menu List Configuration Matrix
+    const quickReactionList = ['👍', '❤️', '🔥', '😂'];
+
+    // Load bottom row dynamic grids
+    emojiDictionaryList.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.className = 'picker-emoji-cell';
+        btn.type = 'button';
+        const hex = getEmojiHex(emoji);
+        btn.innerHTML = `<img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/${hex}.png" alt="${emoji}" style="width: 24px; height: 24px; object-fit: contain; pointer-events: none;" onerror="this.replaceWith('${emoji}')">`;
+        
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // If the global picker panel was opened from a message context `+` button:
+            if (targetMessageIdForGlobalPicker) {
+                await appendReactionToBubble(targetMessageIdForGlobalPicker, emoji);
+                emojiPickerPanel.classList.remove('active');
+                emojiToggleBtn.classList.remove('active');
+                targetMessageIdForGlobalPicker = null;
+            } else {
+                // Otherwise, it was opened from the chat input box row to insert text
+                if (!inputField.disabled) {
+                    inputField.value += emoji;
+                    inputField.focus();
+                }
+            }
+        });
+        emojiPickerGrid.appendChild(btn);
+    });
+
+    emojiToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!inputField.disabled) {
+            targetMessageIdForGlobalPicker = null; // Typing context mode
+            emojiPickerTitle.textContent = "Expressions";
+            emojiPickerPanel.classList.toggle('active');
+            emojiToggleBtn.classList.toggle('active');
+        }
+    });
+
+    // Global Click Dispatcher to manage panel states safely
+    body.addEventListener('click', (e) => {
+        if (!emojiPickerPanel.contains(e.target) && e.target !== emojiToggleBtn && !emojiToggleBtn.contains(e.target)) {
+            emojiPickerPanel.classList.remove('active');
+            emojiToggleBtn.classList.remove('active');
+        }
+        
+        if (!e.target.closest('.chat-bubble-wrapper')) {
+            document.querySelectorAll('.chat-bubble-wrapper.active-menu').forEach(bubble => {
+                bubble.classList.remove('active-menu');
+            });
+        }
+    });
+
+    // 2. Initialize Real-Time Presence Telemetry Channel
     const presenceChannel = spClient.channel('gamerack_online_grid', {
         config: { presence: { key: sessionUserId } }
     });
@@ -122,21 +205,16 @@ panel.innerHTML = `
     presenceChannel
         .on('presence', { event: 'sync' }, () => {
             const state = presenceChannel.presenceState();
-            
-            // Map keys exclusively to other external network profiles (Hides Self-Messaging Clones)
             liveOnlineUsers = Object.keys(state).map(userId => {
                 const primaryMeta = state[userId][0];
-                const existingUserRecord = liveOnlineUsers.find(u => u.id === userId);
-
                 return {
                     id: userId,
                     user_uuid: userId,
                     name: primaryMeta.name,
                     initial: primaryMeta.initial,
-                    avatar: primaryMeta.avatar || "",
-                    messages: existingUserRecord ? existingUserRecord.messages : []
+                    avatar: primaryMeta.avatar || ""
                 };
-            }).filter(u => u.id !== sessionUserId); // Clean production rule: Hidden from self-views
+            }).filter(u => u.id !== sessionUserId);
 
             if (currentlySelectedUser) {
                 const refreshedMatch = liveOnlineUsers.find(u => u.id === currentlySelectedUser.id);
@@ -144,7 +222,6 @@ panel.innerHTML = `
             }
 
             renderContactsPage();
-            if (currentlySelectedUser) loadChatHistory();
         })
         .subscribe(async (status) => {
             if (status === 'SUBSCRIBED') {
@@ -157,21 +234,19 @@ panel.innerHTML = `
             }
         });
 
-    // 3. Initialize Direct P2P Messaging Broadcast Fabrication Fabric
+    // 3. Initialize Direct P2P Broadcast Fabric
     const messagingChannel = spClient.channel('gamerack_chat_fabric');
 
     messagingChannel
         .on('broadcast', { event: 'p2p_msg' }, (payload) => {
             const packet = payload.payload;
-            if (packet.recipientId === sessionUserId) {
-                if (currentlySelectedUser && currentlySelectedUser.user_uuid === packet.senderId) {
-                    loadChatHistory();
-                }
+            if (packet.recipientId === sessionUserId && currentlySelectedUser && currentlySelectedUser.user_uuid === packet.senderId) {
+                loadChatHistory();
             }
         })
         .on('broadcast', { event: 'p2p_reaction' }, (payload) => {
             const packet = payload.payload;
-            if (packet.recipientId === sessionUserId && currentlySelectedUser && currentlySelectedUser.user_uuid === packet.senderId) {
+            if ((packet.recipientId === sessionUserId || packet.senderId === sessionUserId) && currentlySelectedUser) {
                 loadChatHistory();
             }
         })
@@ -180,38 +255,15 @@ panel.innerHTML = `
     // 4. Interface Rendering Engine
     function renderContactsPage() {
         userListContainer.innerHTML = '';
-        
         if (liveOnlineUsers.length === 0) {
-            userListContainer.innerHTML = `
-                <div style="padding: 20px 16px; color: #64748b; font-size: 12px; text-align: center; line-height: 1.4;">
-                    ● No other users online<br>
-                    <span style="font-size: 11px; opacity: 0.6;">Waiting for network peers...</span>
-                </div>
-            `;
-            chatHistoryContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #64748b; font-size: 13px; text-align: center; gap: 8px;">
-                    <svg style="width: 32px; height: 32px; opacity: 0.4;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                    </svg>
-                    Listening for telemetry...
-                </div>
-            `;
-            inputRow.style.opacity = "0.5";
-            inputRow.style.pointerEvents = "none";
-            inputField.disabled = true;
-            sendButton.disabled = true;
-            chatTitle.textContent = "No active conversation selected";
+            userListContainer.innerHTML = `<div style="padding: 20px 16px; color: #64748b; font-size: 12px; text-align: center;">● No online users</div>`;
             return;
         }
 
         liveOnlineUsers.forEach(user => {
             const row = document.createElement('div');
             row.className = `user-row ${currentlySelectedUser && user.id === currentlySelectedUser.id ? 'active' : ''}`;
-            
-            let avatarContent = `<div class="user-avatar">${user.initial}</div>`;
-            if (user.avatar) {
-                avatarContent = `<div class="user-avatar" style="background-image: url('${user.avatar}'); text-indent: -9999px;"></div>`;
-            }
+            let avatarContent = user.avatar ? `<div class="user-avatar" style="background-image: url('${user.avatar}'); text-indent: -9999px;"></div>` : `<div class="user-avatar">${user.initial}</div>`;
 
             row.innerHTML = `
                 <div class="avatar-wrapper">
@@ -230,7 +282,7 @@ panel.innerHTML = `
         });
     }
 
-async function loadChatHistory() {
+    async function loadChatHistory() {
         if (!currentlySelectedUser) return;
         
         inputRow.style.opacity = "1";
@@ -239,19 +291,24 @@ async function loadChatHistory() {
         inputField.placeholder = `Message ${currentlySelectedUser.name}...`;
         sendButton.disabled = false;
 
-        chatTitle.textContent = `Chatting with ${currentlySelectedUser.name}`;
+        chatTitle.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="mobile-back-action" id="mobileChatBackBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </div>
+                <span class="chat-header-user-title">Chatting with ${currentlySelectedUser.name}</span>
+            </div>
+        `;
         
-        // 🔄 MATCHED EXACTLY: sender_id, recipient_id
         const { data: dbMessages, error } = await spClient
             .from('messages')
             .select('*')
             .or(`and(sender_id.eq.${sessionUserId},recipient_id.eq.${currentlySelectedUser.user_uuid}),and(sender_id.eq.${currentlySelectedUser.user_uuid},recipient_id.eq.${sessionUserId})`)
             .order('created_at', { ascending: true });
 
-        if (error) {
-            console.error("Failed to compile chat logs:", error.message);
-            return;
-        }
+        if (error) return;
         
         chatHistoryContainer.innerHTML = '';
         
@@ -260,199 +317,266 @@ async function loadChatHistory() {
             
             const wrapper = document.createElement('div');
             wrapper.className = `chat-bubble-wrapper ${isOutgoing ? 'outgoing' : 'incoming'}`;
+            wrapper.dataset.messageId = msg.id;
             
-            const reactionPanel = document.createElement('div');
-            reactionPanel.className = 'reaction-trigger-panel';
-            ['👍', '❤️', '🔥', '😂'].forEach(emoji => {
-                const btn = document.createElement('button');
-                btn.className = 'react-emoji-btn';
-                btn.innerText = emoji;
-                btn.addEventListener('click', () => appendReaction(msg.id, emoji));
-                reactionPanel.appendChild(btn);
+            wrapper.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const alreadyOpen = wrapper.classList.contains('active-menu');
+                
+                document.querySelectorAll('.chat-bubble-wrapper.active-menu').forEach(b => {
+                    b.classList.remove('active-menu');
+                });
+                
+                if (!alreadyOpen) {
+                    wrapper.classList.add('active-menu');
+                }
             });
-            wrapper.appendChild(reactionPanel);
+            
+            // Build Floating Action Quick Reaction Menu Card
+            const actionMenu = document.createElement('div');
+            actionMenu.className = 'bubble-context-reaction-bar';
+            
+            // Render basic short list triggers
+            quickReactionList.forEach(emoji => {
+                const emoBtn = document.createElement('button');
+                emoBtn.className = 'bubble-react-emoji-clicker';
+                const emojiHex = getEmojiHex(emoji);
+                emoBtn.innerHTML = `<img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/${emojiHex}.png" alt="${emoji}">`;
+                
+                emoBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    appendReactionToBubble(msg.id, emoji);
+                    wrapper.classList.remove('active-menu'); 
+                });
+                actionMenu.appendChild(emoBtn);
+            });
 
+            // Add '+' Button to load the full panel options grid
+            const plusBtn = document.createElement('button');
+            plusBtn.className = 'bubble-react-plus-btn';
+            plusBtn.type = 'button';
+            plusBtn.textContent = '+';
+            plusBtn.title = 'More Reactions';
+            
+            plusBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Point tracking reference context index target variable to this specific message
+                targetMessageIdForGlobalPicker = msg.id;
+                emojiPickerTitle.textContent = "React to Message";
+                
+                // Toggle open the main expressions grid system panel viewport
+                emojiPickerPanel.classList.add('active');
+                
+                // Instantly collapse and hide the small floating bar so it doesn't overlap the panel
+                wrapper.classList.remove('active-menu'); 
+            });
+            actionMenu.appendChild(plusBtn);
+            wrapper.appendChild(actionMenu);
+
+            // Chat Bubble Element Node
             const bubble = document.createElement('div');
             bubble.className = `chat-bubble ${isOutgoing ? 'outgoing' : 'incoming'}`;
             
-            // 🔄 MATCHED EXACTLY: message_text
-            if (msg.message_text) {
-                bubble.textContent = msg.message_text;
-            }
-            
+            if (msg.message_text) bubble.textContent = msg.message_text;
             if (msg.file_url) {
                 const img = document.createElement('img');
                 img.src = msg.file_url;
                 img.className = 'chat-attached-img';
-                img.addEventListener('click', () => window.open(msg.file_url, '_blank'));
+                img.onclick = (e) => {
+                    e.stopPropagation();
+                    window.open(msg.file_url, '_blank');
+                };
                 bubble.appendChild(img);
             }
             wrapper.appendChild(bubble);
 
-            if (msg.reactions && Object.keys(msg.reactions).length > 0) {
-                const badge = document.createElement('div');
-                badge.className = 'bubble-reaction-badge';
-                badge.innerText = Object.entries(msg.reactions).map(([emo, count]) => `${emo} ${count}`).join(' ');
-                wrapper.appendChild(badge);
+            // Build Inline Pill Box Container Row directly under the message bubble
+            const pillsContainer = document.createElement('div');
+            pillsContainer.className = 'bubble-inline-reactions-container';
+            
+            let safeReactions = msg.reactions;
+            if (typeof safeReactions === 'string') {
+                try { safeReactions = JSON.parse(safeReactions); } catch(e) { safeReactions = {}; }
+            }
+            if (!safeReactions || typeof safeReactions !== 'object') {
+                safeReactions = {};
             }
 
+            Object.entries(safeReactions).forEach(([emojiSymbol, userIdsArray]) => {
+                if (!Array.isArray(userIdsArray)) {
+                    userIdsArray = [];
+                }
+                const talliesCount = userIdsArray.length;
+                
+                if (talliesCount > 0) {
+                    const pill = document.createElement('div');
+                    const hasMyReaction = userIdsArray.includes(sessionUserId);
+                    
+                    pill.className = `reaction-pill-badge ${hasMyReaction ? 'my-reaction-active' : ''}`;
+                    const badgeHex = getEmojiHex(emojiSymbol);
+                    pill.innerHTML = `<img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/${badgeHex}.png" alt="${emojiSymbol}"> <span>${talliesCount}</span>`;
+                    
+                    pill.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appendReactionToBubble(msg.id, emojiSymbol);
+                    });
+                    pillsContainer.appendChild(pill);
+                }
+            });
+            wrapper.appendChild(pillsContainer);
             chatHistoryContainer.appendChild(wrapper);
         });
         
         chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
-        inputField.focus();
+    }
+
+    // Handles smart anti-spam toggling: Max 1 unique reaction per user per emoji
+    async function appendReactionToBubble(msgId, emoji) {
+        const numericId = parseInt(msgId, 10);
+        
+        const { data: currentMsg, error: fetchError } = await spClient
+            .from('messages')
+            .select('reactions')
+            .eq('id', numericId)
+            .single();
+
+        if (fetchError) {
+            console.error("Failed to fetch current reactions:", fetchError.message);
+            return;
+        }
+
+        let reactionMatrix = currentMsg?.reactions || {};
+        if (typeof reactionMatrix === 'string') {
+            try { reactionMatrix = JSON.parse(reactionMatrix); } catch(e) { reactionMatrix = {}; }
+        }
+        if (typeof reactionMatrix !== 'object' || reactionMatrix === null) {
+            reactionMatrix = {};
+        }
+        
+        if (!Array.isArray(reactionMatrix[emoji])) {
+            reactionMatrix[emoji] = [];
+        }
+        
+        const index = reactionMatrix[emoji].indexOf(sessionUserId);
+        
+        if (index > -1) {
+            reactionMatrix[emoji].splice(index, 1);
+        } else {
+            reactionMatrix[emoji].push(sessionUserId);
+        }
+
+        const { error: updateError } = await spClient
+            .from('messages')
+            .update({ reactions: reactionMatrix })
+            .eq('id', numericId);
+
+        if (updateError) {
+            console.error("Supabase rejected reaction update:", updateError.message);
+        } else {
+            messagingChannel.send({
+                type: 'broadcast',
+                event: 'p2p_reaction',
+                payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
+            });
+            await loadChatHistory();
+        }
     }
 
     async function processOutgoingMessage() {
         const text = inputField.value.trim();
         if (!text || !currentlySelectedUser) return;
 
-        // 🔄 MATCHED EXACTLY: recipient_id, message_text
         const { error } = await spClient
             .from('messages')
             .insert({
                 sender_id: sessionUserId,
                 recipient_id: currentlySelectedUser.user_uuid,
-                message_text: text
+                message_text: text,
+                reactions: {} 
             });
 
         if (error) {
-            console.error("Message drop detected:", error.message);
-            return;
+            console.error("Supabase failed to insert message:", error.message);
+            alert("Message failed to send: " + error.message);
+        } else {
+            messagingChannel.send({
+                type: 'broadcast',
+                event: 'p2p_msg',
+                payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
+            });
+            inputField.value = '';
+            await loadChatHistory(); 
         }
-
-        messagingChannel.send({
-            type: 'broadcast',
-            event: 'p2p_msg',
-            payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
-        });
-
-        inputField.value = '';
-        await loadChatHistory(); 
     }
 
-async function handleImageUpload(e) {
+    async function handleImageUpload(e) {
         const file = e.target.files[0];
         if (!file || !currentlySelectedUser) return;
 
         const fileExt = file.name.split('.').pop();
         const pathFileName = `${sessionUserId}/${Date.now()}.${fileExt}`;
 
-        // Upload to storage bucket
         const { data: storageData, error: uploadErr } = await spClient.storage
             .from('messages_bucket')
             .upload(pathFileName, file, { cacheControl: '3600', upsert: true });
 
-        if (uploadErr) {
-            console.error("Storage delivery error:", uploadErr.message);
-            return;
-        }
+        if (uploadErr) return;
 
         const { data: { publicUrl } } = spClient.storage
             .from('messages_bucket')
             .getPublicUrl(pathFileName);
 
-        // 🔄 REPAIRED HERE: Swapped message_content back to message_text
         const { error: dbErr } = await spClient
             .from('messages')
             .insert({
                 sender_id: sessionUserId,
                 recipient_id: currentlySelectedUser.user_uuid,
-                message_text: '', // 👈 Fixed column target name match
-                file_url: publicUrl
+                message_text: '', 
+                file_url: publicUrl,
+                reactions: {}
             });
 
-        if (dbErr) {
-            console.error("Media relation generation failure:", dbErr.message);
-            return;
+        if (!dbErr) {
+            messagingChannel.send({
+                type: 'broadcast',
+                event: 'p2p_msg',
+                payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
+            });
+            await loadChatHistory();
         }
-
-        messagingChannel.send({
-            type: 'broadcast',
-            event: 'p2p_msg',
-            payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
-        });
-
-        fileInput.value = '';
-        await loadChatHistory();
     }
 
-    async function appendReaction(msgId, emoji) {
-        if (!currentlySelectedUser) return;
-
-        const numericMsgId = parseInt(msgId, 10);
-
-        const { data: messageItem } = await spClient
-            .from('messages')
-            .select('reactions')
-            .eq('id', numericMsgId)
-            .single();
-
-        let currentReactions = messageItem?.reactions || {};
-        currentReactions[emoji] = (currentReactions[emoji] || 0) + 1;
-
-        const { error } = await spClient
-            .from('messages')
-            .update({ reactions: currentReactions })
-            .eq('id', numericMsgId);
-
-        if (error) {
-            console.error("Reaction matrix drop:", error.message);
-            return;
-        }
-
-        messagingChannel.send({
-            type: 'broadcast',
-            event: 'p2p_reaction',
-            payload: { senderId: sessionUserId, recipientId: currentlySelectedUser.user_uuid }
-        });
-
-        await loadChatHistory();
-    }
-
-    // 5. Native DOM Action Bindings
+    // Native DOM Action Bindings
     launcher.addEventListener('click', () => panel.classList.toggle('active'));
     sendButton.addEventListener('click', processOutgoingMessage);
     inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') processOutgoingMessage(); });
     attachButton.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleImageUpload);
 
-/* ==================================================================
-       🚀 MOBILE PAGE-FLIP NAVIGATION ENGINE ROUTER
-       ================================================================== */
-    
-    // 1. When an online user row container item is clicked, slide in Screen 2 (Chat box view)
     body.addEventListener('click', (e) => {
         const selectedUserRow = e.target.closest('.user-row');
-        if (selectedUserRow) {
-            // Check if we are running inside mobile layout widths
-            if (window.innerWidth <= 768) {
-                panel.classList.add('user-is-selected');
-            }
+        if (selectedUserRow && window.innerWidth <= 768) {
+            panel.classList.add('user-is-selected');
         }
     });
 
-// Target the specific close button located inside the active chat header
     body.addEventListener('click', (e) => {
-        // Find the specific button using e.target.closest to catch clicks on child text nodes
         if (e.target.closest('#chatCloseXBtn')) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Close the main messenger frame context
             panel.classList.remove('active');
-            // Clean up the routing state so that it returns to Screen 1 upon reopening
             panel.classList.remove('user-is-selected'); 
         }
-    });
-
-    // 3. Tapping the chat header title back arrow slides Screen 2 away to return to Screen 1
-    body.addEventListener('click', (e) => {
-        if (e.target.closest('#mobileChatBackBtn')) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (window.innerWidth <= 768) {
-                panel.classList.remove('user-is-selected');
-            }
+        if (e.target.closest('#mobileChatBackBtn') && window.innerWidth <= 768) {
+            panel.classList.remove('user-is-selected');
+        }
+        if (e.target.closest('#sidebarBackToAppsBtn')) {
+            panel.classList.remove('active');
+            panel.classList.remove('user-is-selected');
         }
     });
 
