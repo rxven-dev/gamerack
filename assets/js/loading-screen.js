@@ -48,3 +48,35 @@ function triggerCentralSync(message, completeCallback) {
 
     }, 1200); // Database simulation execution lag buffer
 }
+
+// CUSTOM PREMIUM GLASS MODAL ALTERNATIVE TO DEFAULT BROWSER ALERTS
+function triggerCentralAlert(message) {
+    // 1. Clear out any hanging older instances
+    const existingAlert = document.getElementById('globalAlertOverlay');
+    if (existingAlert) existingAlert.remove();
+
+    // 2. Generate UI structures dynamically matching the loader layout templates
+    const overlay = document.createElement('div');
+    overlay.id = 'globalAlertOverlay';
+    overlay.className = 'global-alert-overlay';
+    
+    overlay.innerHTML = `
+        <div class="alert-card">
+            <div class="alert-message">${message}</div>
+            <button class="alert-btn" id="closeAlertBtn">Confirm</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // 3. Smooth fade-in activation loop
+    requestAnimationFrame(() => {
+        overlay.classList.add('active');
+    });
+
+    // 4. Kill-switch clean event handler closure
+    document.getElementById('closeAlertBtn').addEventListener('click', () => {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    });
+}

@@ -18,31 +18,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// ==========================================================================
-// CENTRAL SYSTEM NODE DEAUTHORIZATION (SIGN OUT INTERCEPTOR)
-// ==========================================================================
+//central system node sign out logic
+// --- 🚪 Enhanced Sign Out Session Purge ---
 document.addEventListener("DOMContentLoaded", () => {
     const signoutBtn = document.getElementById('systemSignoutBtn');
     
     if (signoutBtn) {
-        signoutBtn.addEventListener('click', (e) => {
+        signoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            
-            // 1. Verify your custom dynamic screen handler from assets/js/loading-screen.js exists
-            if (typeof triggerCentralSync === "function") {
-                
-                // 2. Spin your beautiful custom sync loading block over the view dashboard frame
-                triggerCentralSync("Terminating Node Handshake & Revoking Access Tokens", () => {
-                    
-                    // 3. This clean block triggers smoothly right behind the frosted blur screen wall!
-                    localStorage.removeItem("gamerack_authenticated");
-                    window.location.replace("auth.html");
-                });
-                
-            } else {
-                // Instantly cycle parameters if script references are missing in memory
+            const spClient = window.globalSupabase;
+
+            const executePurge = async () => {
+                if (spClient) {
+                    await spClient.auth.signOut();
+                }
+                // 🎯 Clear ALL lingering authentication cache keys completely
                 localStorage.removeItem("gamerack_authenticated");
+                localStorage.clear(); 
+                sessionStorage.clear();
+                
                 window.location.replace("auth.html");
+            };
+
+            if (typeof triggerCentralSync === "function") {
+                triggerCentralSync("Terminating Node Handshake & Revoking Access Tokens", async () => {
+                    await executePurge();
+                });
+            } else {
+                await executePurge();
             }
         });
     }

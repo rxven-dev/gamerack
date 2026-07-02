@@ -72,3 +72,84 @@
 @keyframes cryptoSpin {
     to { transform: rotate(360deg); }
 }
+
+/* ==========================================================================
+   MATCHING ULTRA-PREMIUM GLASS ALERT MODAL
+   ========================================================================== */
+.global-alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(8, 6, 16, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10001; /* Floats directly over everything */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-alert-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Styled perfectly to match your sync-card */
+.alert-card {
+    background: rgba(18, 14, 32, 0.85);
+    border: 1px solid rgba(138, 92, 246, 0.25);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 
+                0 0 40px rgba(138, 92, 246, 0.1);
+    padding: 32px 40px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-alert-overlay.active .alert-card {
+    transform: scale(1);
+}
+
+.alert-message {
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Premium Interactive Luminous Close Action Tab Button */
+.alert-btn {
+    background: linear-gradient(135deg, #8a5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(138, 92, 246, 0.3);
+    transition: all 0.2s ease;
+}
+
+.alert-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 92, 246, 0.5);
+    filter: brightness(1.1);
+}
+
+.alert-btn:active {
+    transform: translateY(0);
+}

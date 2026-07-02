@@ -139,11 +139,11 @@
                 <form id="loginForm">
                     <div class="input-group">
                         <label>Email Account</label>
-                        <input type="email" placeholder="name@company.com" required>
+                        <input type="email" id="loginEmail" placeholder="name@company.com" required>
                     </div>
                     <div class="input-group">
                         <label>Password</label>
-                        <input type="password" placeholder="••••••••" required>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
                     </div>
                     <div class="input-group">
                         <label>Human Verification Challenge</label>
@@ -163,7 +163,7 @@
                 <form id="signupForm">
                     <div class="input-group">
                         <label>Full Name</label>
-                        <input type="text" placeholder="e.g. Juan De La Cruz" required>
+                        <input type="text" id="signupName" placeholder="e.g. Juan De La Cruz" required>
                     </div>
                     <div class="input-group">
                         <label>Email Address</label>
@@ -171,7 +171,7 @@
                     </div>
                     <div class="input-group">
                         <label>Password</label>
-                        <input type="password" placeholder="••••••••" required>
+                        <input type="password" id="signupPassword" placeholder="••••••••" required>
                     </div>
                     <button type="submit" class="ios-btn-primary" style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25); font-weight: 600; width: 100%; padding: 14px; border-radius: 12px; color: #fff; cursor: pointer;">
                         Create Account
@@ -196,12 +196,32 @@
         </div> 
     </div> 
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
 
-    <script type="module" src="assets/js/firebase-config.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Live Cloud Environment Matching index.html settings
+        const SUPABASE_URL = "https://bfruphrumbkmfoxkejwi.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_y_kIoP14JXDMKUbGUy7cxg_bgWSzyqZ"; 
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    </script>
+
     <script src="assets/js/close-popup.js"></script>
     <script>
-        // 2. Initialize EmailJS SDK
+ 
+ // 🔥 EMERGENCY FORCE-RESET GATEWAY
+// Run this once to completely wipe out any sticky hidden login memory sessions
+localStorage.clear();
+sessionStorage.clear();
+
+// Safely attempt to tell Supabase to delete the cookie tokens if it exists
+if (window.supabaseClient && window.supabaseClient.auth) {
+    window.supabaseClient.auth.signOut().catch(() => {});
+}
+console.log("Memory successfully cleared!");
+        
         (function() {
             emailjs.init("owB2XT75OBCwbGap4"); 
         })();
@@ -225,7 +245,11 @@
         let generatedCaptchaCode = "";
         let activeEmailVerificationToken = "";
 
-        // 🌟 REPLACEMENT NOTIFICATION ENGINE FOR SYSTEM ALERTS
+        // Temporary register cache variables to hold inputs through email validation gate
+        let cachedSignupName = "";
+        let cachedSignupEmail = "";
+        let cachedSignupPassword = "";
+
         const showToast = (message, isError = false) => {
             const toast = document.createElement('div');
             toast.className = `custom-toast ${isError ? 'error' : ''}`;
@@ -235,20 +259,17 @@
             `;
             toastContainer.appendChild(toast);
             
-            // Trigger animation frame entry
             setTimeout(() => toast.classList.add('active'), 50);
 
-            // Handler to clean up node automatically
             const removeToast = () => {
                 toast.classList.remove('active');
                 setTimeout(() => toast.remove(), 400);
             };
 
             toast.querySelector('.toast-close').addEventListener('click', removeToast);
-            setTimeout(removeToast, 5000); // Auto expire after 5s
+            setTimeout(removeToast, 5000); 
         };
 
-        // View Shuffling hooks
         toSignup.addEventListener('click', (e) => {
             e.preventDefault();
             loginCard.classList.remove('active');
@@ -261,7 +282,6 @@
             loginCard.classList.add('active');
         });
 
-        // Captcha Routine Generators
         const generateSystemCaptcha = () => {
             const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; 
             let result = "";
@@ -274,33 +294,47 @@
             }
         };
 
-        // Sign In Form Submissions
-        loginForm.addEventListener('submit', (e) => {
+// --- 🔐 Authenticated Login Matrix Fix ---
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (captchaInput.value.trim().toUpperCase() !== generatedCaptchaCode) {
-                showToast("Security Verification Code Invalid. Please retry.", true);
-                generateSystemCaptcha();
-                captchaInput.value = "";
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showToast("Please authenticate all input channels.", true);
                 return;
             }
 
-            localStorage.setItem("gamerack_authenticated", "true");
+            const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-            if (typeof triggerCentralSync === "function") {
-                triggerCentralSync("Authorizing Secure Identity Credentials", () => {
+            if (authErr) {
+                showToast(authErr.message, true);
+                return;
+            }
+
+            // 🎯 FIXED: Safely pass control parameters directly to index.html 
+            // without corrupting or overwriting table profiles during a login pipeline
+            if (authData?.user) {
+                localStorage.setItem("gamerack_authenticated", "true");
+                showToast("Identity confirmed! Access granted.");
+                
+                setTimeout(() => {
                     window.location.href = 'index.html';
-                });
-            } else {
-                window.location.href = 'index.html';
+                }, 1000);
             }
         });
 
-        // 3. Signup Form Handler - Dispatches EmailJS smoothly with custom toast popups
+        // Signup form handler -> Dispatches verification pin code
         signupForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const targetEmail = signupEmailInput.value.trim();
+            cachedSignupName = document.getElementById('signupName').value.trim();
+            cachedSignupEmail = signupEmailInput.value.trim();
+            cachedSignupPassword = document.getElementById('signupPassword').value;
+            
             const secureToken = Math.floor(100000 + Math.random() * 900000).toString();
             activeEmailVerificationToken = secureToken;
 
@@ -311,13 +345,13 @@
                             "service_zkre1sb",  
                             "template_2qlbqr2", 
                             {
-                                to_email: targetEmail,
+                                to_email: cachedSignupEmail,
                                 verification_code: secureToken
                             }
                         );
 
                         if (response.status === 200) {
-                            showToast(`Verification token successfully sent to ${targetEmail}!`);
+                            showToast(`Verification token successfully sent to ${cachedSignupEmail}!`);
                             signupCard.classList.remove('active');
                             verifyCard.classList.add('active');
                         } else {
@@ -334,19 +368,86 @@
             }
         });
 
-        // 4. Code Checking Submissions Form
-        verifyForm.addEventListener('submit', (e) => {
+        // 👥 VERIFY AND REGISTER ACCOUNT DIRECTLY INSIDE SUPABASE + PROFILES MATRIX TABLE
+        verifyForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userInput = verificationCodeInput.value.trim();
 
-            if (userInput === activeEmailVerificationToken) {
-                localStorage.setItem("gamerack_authenticated", "true");
-                showToast("Identity confirmed! Access granted.");
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-            } else {
+            if (userInput !== activeEmailVerificationToken) {
                 showToast("Security handshake failed. Verification code mismatch.", true);
+                return;
+            }
+
+            if (!supabaseClient) {
+                showToast("Supabase context missing.", true);
+                return;
+            }
+
+            if (typeof triggerCentralSync === "function") {
+                triggerCentralSync("Finalizing Cloud Infrastructure Registration...", async () => {
+                    // 1. Create User Authentication Profile Inside Supabase
+                    const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+                        email: cachedSignupEmail,
+                        password: cachedSignupPassword
+                    });
+
+                    if (authErr) {
+                        showToast(authErr.message, true);
+                        return;
+                    }
+
+                    const verifiedUser = authData?.user;
+                    if (verifiedUser) {
+                        // 2. Link registration details directly to the customized database profiles table
+                        const { error: profileErr } = await supabaseClient
+                            .from('profiles')
+                            .insert([
+                                {
+                                    id: verifiedUser.id,
+                                    profile_name: cachedSignupName,
+                                    profile_email: cachedSignupEmail,
+                                    avatar_url: ""
+                                }
+                            ]);
+
+                        if (profileErr) {
+                            console.error("Database initialization failed:", profileErr.message);
+                        }
+                        
+                        localStorage.setItem("gamerack_authenticated", "true");
+                        showToast("Identity confirmed! Access granted.");
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1000);
+                    }
+                });
+            } else {
+                const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+                    email: cachedSignupEmail,
+                    password: cachedSignupPassword
+                });
+
+                if (authErr) {
+                    showToast(authErr.message, true);
+                    return;
+                }
+
+                if (authData?.user) {
+                    await supabaseClient.from('profiles').insert([
+                        {
+                            id: authData.user.id,
+                            profile_name: cachedSignupName,
+                            profile_email: cachedSignupEmail,
+                            avatar_url: ""
+                        }
+                    ]);
+
+                    localStorage.setItem("gamerack_authenticated", "true");
+                    showToast("Identity confirmed! Access granted.");
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                }
             }
         });
 

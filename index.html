@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gamerack | Control Center</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/top-bar.css">
@@ -16,6 +16,11 @@
     <link rel="stylesheet" href="assets/css/Checkout-Cart.css">
     <link rel="stylesheet" href="assets/css/footer.css">
     <link rel="stylesheet" href="assets/css/messenger.css">
+    <link rel="stylesheet" href="assets/css/mobile-engine.css">
+    <link rel="icon" href="data:,">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <script>
         // Security Gate: Redirect users immediately to registration if they have no active login credentials
@@ -46,6 +51,11 @@
 
         <main class="main-content">
             <header class="ios-top-bar">
+                <button id="mobileMenuBtn" class="mobile-hamburger-btn" aria-label="Open Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <div class="top-bar-search">
                     <span class="search-icon">🔍</span>
                     <input type="text" placeholder="Search..." id="dashboardSearch">
@@ -60,7 +70,7 @@
                     </select>
                     <div class="profile-pill">
                         <span class="online-indicator"></span>
-                        <span id="topBarUser">Loading Account...</span>
+                        <span id="topBarUser">Apex Studios</span>
                     </div>
                 </div>
             </header>
@@ -247,27 +257,26 @@
                         </div>
                     </div>
 
-                    <div id="cropperOverlay" class="ios-popup-overlay" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
-                        <div class="ios-popup-sheet" style="max-width: 450px; width: 90%; background: #0d0a1a; border: 1px solid #8b5cf6;">
-                            <div class="popup-header">
-                                <h3>Adjust Asset Scaling Coordinates</h3>
-                                <button class="close-btn" id="closeCropperBtn">×</button>
-                            </div>
-                            <div class="popup-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-                                <div class="crop-workspace-frame" style="width: 100%; height: 280px; background: #04020a; position: relative; overflow: hidden; border-radius: 8px; border: 1px dashed rgba(139, 92, 246, 0.4);">
-                                    <img id="cropPreviewImg" src="" style="position: absolute; cursor: move; transform-origin: top left; user-select: none; max-width: none;">
-                                    <div class="crop-target-lens" style="position: absolute; top: 50%; left: 50%; width: 160px; height: 160px; transform: translate(-50%, -50%); border-radius: 50%; box-shadow: 0 0 0 9999px rgba(4, 2, 10, 0.75); border: 2px solid #8b5cf6; pointer-events: none;">
-                                        <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.3); animation: nodePulseEffect 4s infinite linear;"></div>
-                                    </div>
-                                </div>
-                                <div style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
-                                    <label style="font-family: monospace; font-size: 11px; color: var(--text-secondary);">MATRIX SCALING SCALER</label>
-                                    <input type="range" id="cropZoomSlider" min="0.1" max="3" step="0.01" value="1" style="width: 100%; accent-color: #8b5cf6;">
-                                </div>
-                                <button id="applyCropBtn" class="ios-btn-primary" style="width: 100%; background: #8b5cf6;">Finalize Asset Initialization</button>
-                            </div>
-                        </div>
-                    </div>
+<div id="cropperOverlay" class="ios-popup-overlay" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
+    <div class="ios-popup-sheet" style="max-width: 450px; width: 90%; background: #0d0a1a; border: 1px solid #8b5cf6;">
+        <div class="popup-header">
+            <h3>Adjust Asset Scaling Coordinates</h3>
+            <button class="close-btn" id="closeCropperBtn">×</button>
+        </div>
+        <div class="popup-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <div class="crop-workspace-frame">
+                <img id="cropPreviewImg" src="" style="max-width: 100%; height: auto;">
+                
+                </div>
+            
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-family: monospace; font-size: 11px; color: var(--text-secondary);">MATRIX SCALING SCALER</label>
+                <input type="range" id="cropZoomSlider" min="0" max="100" step="1" value="0" style="width: 100%; accent-color: #8b5cf6;">
+            </div>
+            <button id="applyCropBtn" class="ios-btn-primary" style="width: 100%; background: #8b5cf6;">Finalize Asset Initialization</button>
+        </div>
+    </div>
+</div>
 
                     <div class="ios-card glass full-width" style="margin-bottom: 24px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -442,44 +451,88 @@
     <script src="assets/js/salesAnalytics.js"></script>
     <script src="assets/js/messenger.js"></script>
     <script src="assets/js/footer.js"></script>
+    <script src="assets/js/mobile-engine.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // 1. Fetch the unique id of the current logged-in profile slot
-            const currentUserId = localStorage.getItem('logged_in_user_id') || 'GUEST_DEFAULT';
-            
-            // 2. Load the settings specific to this user profile context
-            const sessionName = localStorage.getItem(`profile_name_${currentUserId}`) || localStorage.getItem('logged_in_username') || "Gamerack Profile";
-            const sessionEmail = localStorage.getItem(`profile_email_${currentUserId}`) || "admin@apexstudios.dev";
-            const sessionAvatar = localStorage.getItem(`profile_avatar_${currentUserId}`);
-            
-            // Sync top bar indicator profile widget with the true user's name
-            const topBarNode = document.getElementById('topBarUser');
-            if (topBarNode) {
-                topBarNode.textContent = sessionName;
+        const SUPABASE_URL = "https://bfruphrumbkmfoxkejwi.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_y_kIoP14JXDMKUbGUy7cxg_bgWSzyqZ";
+        
+        // Expose a single global client across your files
+        window.globalSupabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            if (!window.globalSupabase) return;
+
+            // 1. Fetch live authenticated active user session 
+            const { data: { user }, error: authError } = await window.globalSupabase.auth.getUser();
+
+            if (authError || !user) {
+                console.log("No active cloud login detected. Falling back to layout identities.");
+                return;
             }
 
-            // Sync structural editable input element on the Profile Settings view
-            const profileInputNode = document.getElementById('editProfName');
-            if (profileInputNode) {
-                profileInputNode.value = sessionName;
-            }
-            
-            const profileEmailNode = document.getElementById('editProfEmail');
-            if (profileEmailNode) {
-                profileEmailNode.value = sessionEmail;
-            }
+        // 2. Query structural information from custom profiles database matrix
+            const { data: profile, error: dbError } = await window.globalSupabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle(); 
 
-            // Sync text or background asset matrix inside the profile badge circle node
-            const avatarDisplayNode = document.getElementById('avatarDisplay');
-            if (avatarDisplayNode) {
-                if (sessionAvatar) {
-                    avatarDisplayNode.style.backgroundImage = `url(${sessionAvatar})`;
-                    avatarDisplayNode.textContent = ""; 
-                } else {
-                    avatarDisplayNode.style.backgroundImage = "none";
-                    const initialText = sessionName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                    avatarDisplayNode.textContent = initialText || "GR";
+            console.log("INDEX.HTML FETCH ON LOAD:", { profile, dbError });
+
+// 1. Only execute if there is absolutely NO profile found AND there wasn't a database error
+if (!profile && !dbError) {
+    console.log("No profile found. Creating a matching row strictly for this authenticated session...");
+    
+    const emailPrefix = user.email ? user.email.split('@')[0] : "user_" + Math.floor(Math.random() * 10000);
+    const safeUniqueDefaultName = "user_" + emailPrefix;
+
+    // 2. Use .insert() instead of .upsert() so it NEVER overwrites an existing row by accident
+    const { error: insertErr } = await window.globalSupabase
+        .from('profiles')
+        .insert({
+            id: user.id,
+            profile_name: safeUniqueDefaultName,
+            profile_email: user.email, // Use the exact email from the active session
+            avatar_url: ""
+        });
+
+    if (insertErr) {
+        console.error("Failed to seed initial profile row:", insertErr.message);
+    } else {
+        console.log("Initial seed profile successfully generated!");
+        window.location.reload();
+    }
+    return;
+} else if (dbError) {
+    // 3. Gracefully handle database connection or RLS errors without breaking user data
+    console.error("Database connection issue or RLS restriction preventing profile read:", dbError.message);
+    return;
+}
+
+            // 3. Inject cloud metrics seamlessly into your UI structures
+            if (profile) {
+                const topBarNode = document.getElementById('topBarUser');
+                if (topBarNode) topBarNode.textContent = profile.profile_name || "Apex Studios";
+
+                const nameInputs = document.querySelectorAll("#editProfName");
+                nameInputs.forEach(input => { input.value = profile.profile_name || "Apex Studios"; });
+
+                const emailInputs = document.querySelectorAll("#editProfEmail");
+                emailInputs.forEach(input => { input.value = profile.profile_email || "admin@apexstudios.dev"; });
+
+                const avatarDisplayNode = document.getElementById('avatarDisplay');
+                if (avatarDisplayNode) {
+                    if (profile.avatar_url) {
+                        avatarDisplayNode.style.backgroundImage = `url('${profile.avatar_url}')`;
+                        avatarDisplayNode.textContent = ""; 
+                    } else {
+                        avatarDisplayNode.style.backgroundImage = "none";
+                        const nameString = profile.profile_name || "Apex Studios";
+                        const initialText = nameString.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                        avatarDisplayNode.textContent = initialText || "GR";
+                    }
                 }
             }
         });

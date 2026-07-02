@@ -1,11 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    // Rely on the global initialization set by index.html
+    const spClient = window.globalSupabase;
+
     // Core Identity Node Selectors
     const avatarContainer = document.querySelector(".editable-avatar-container");
     const avatarFileInput = document.getElementById("avatarFileInput");
     const avatarDisplay = document.getElementById("avatarDisplay");
     const topBarUser = document.getElementById("topBarUser");
-    const inputName = document.getElementById("editProfName");
-    const inputEmail = document.getElementById("editProfEmail");
     const saveBtn = document.getElementById("saveProfileBtn");
 
     // Cropping System Engine Selectors
@@ -15,161 +16,245 @@ document.addEventListener("DOMContentLoaded", () => {
     const applyCropBtn = document.getElementById("applyCropBtn");
     const closeCropperBtn = document.getElementById("closeCropperBtn");
 
-    let originalImgBase64 = "";
-    let isDragging = false;
-    let startX, startY, imgLeft = 0, imgTop = 0;
-    let currentScale = 1;
+    // 🔮 CRITICAL FIX: Define the cropper instance in the file scope
+    let cropper = null; 
 
-    // ⚡ EXPLICIT LOADING SCREEN TRIGGER FUNCTION ⚡
-    const runGlobalLoadingAnimation = (callback) => {
-        // Look for your loading screen container element in the HTML
-        const loadingOverlay = document.getElementById("loading-screen") || document.querySelector(".loading-screen-overlay");
+// --- 🔄 Synchronize Database Row State on Load ---
+    const initProfileDataState = async () => {
+        if (!spClient) return;
         
-        if (loadingOverlay) {
-            // 1. Reveal your custom loading animation screen
-            loadingOverlay.style.display = "flex";
-            loadingOverlay.style.opacity = "1";
+        try {
+            const { data: { user } } = await spClient.auth.getUser();
+            if (!user) return;
 
-            // 2. Keep it active to show the premium loading visual, then fade out smoothly
-            setTimeout(() => {
-                loadingOverlay.style.opacity = "0";
-                setTimeout(() => {
-                    loadingOverlay.style.display = "none";
-                    if (callback) callback(); // Run any save updates once the loader clears
-                }, 400); // Wait for fade transition
-            }, 1200); // Duration the loader stays visible
-        } else {
-            // Fallback if loading element is missing on certain sub-pages
-            if (callback) callback();
+            // Fetch the logged-in user profile manifest
+            let { data: profile, error: fetchErr } = await spClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            // 🎯 FIXED: If the profile row doesn't exist yet, seed it with auth defaults!
+            if (!profile && !fetchErr) {
+                const defaultName = user.user_metadata?.full_name || "New Developer";
+                const defaultEmail = user.email || "";
+
+                const { data: newProfile, error: insertErr } = await spClient
+                    .from('profiles')
+                    .upsert({
+                        id: user.id,
+                        profile_name: defaultName,
+                        profile_email: defaultEmail,
+                        avatar_url: ""
+                    })
+                    .select()
+                    .single();
+
+                if (!insertErr) profile = newProfile;
+            }
+
+            console.log("DEVELOPER.JS FETCH ON LOAD CALIBRATION:", { profile, fetchErr });
+
+            if (profile) {
+                const nameElements = document.querySelectorAll("#editProfName");
+                const emailElements = document.querySelectorAll("#editProfEmail");
+                
+                nameElements.forEach(el => el.value = profile.profile_name || "");
+                emailElements.forEach(el => el.value = profile.profile_email || "");
+                
+                if (topBarUser) topBarUser.textContent = profile.profile_name || "Apex Studios";
+                
+                if (avatarDisplay && profile.avatar_url) {
+                    avatarDisplay.style.backgroundImage = `url(${profile.avatar_url})`;
+                    avatarDisplay.textContent = "";
+                }
+            }
+        } catch (err) {
+            console.error("Error initializing profile data state:", err);
         }
     };
 
-    // 🔄 Load Saved Data Instantly on Refresh
-    const initProfileDataState = () => {
-        const storedName = localStorage.getItem("gr_studio_name");
-        const storedEmail = localStorage.getItem("gr_studio_email");
-        const storedAvatar = localStorage.getItem("gr_studio_avatar");
-
-        if (storedName) {
-            inputName.value = storedName;
-            if (topBarUser) topBarUser.textContent = storedName;
-        }
-        if (storedEmail) inputEmail.value = storedEmail;
-        if (storedAvatar) {
-            avatarDisplay.style.backgroundImage = `url('${storedAvatar}')`;
-            avatarDisplay.textContent = ""; 
-        }
-    };
-
-    if (avatarContainer) {
+    if (avatarContainer && avatarFileInput) {
         avatarContainer.addEventListener("click", () => avatarFileInput.click());
     }
 
-    // Initialize Chosen Binary Asset Data Buffer Stream
+    // --- 📸 Handle File Loading & Initialize Circle Cropper ---
     if (avatarFileInput) {
         avatarFileInput.addEventListener("change", (e) => {
             const file = e.target.files[0];
-            if (!file) return;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    // Reset old cropper framework completely before swapping sources
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
+                    
+                    cropPreviewImg.src = event.target.result;
+                    cropperOverlay.style.display = "flex";
 
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                originalImgBase64 = event.target.result;
-                cropPreviewImg.src = originalImgBase64;
-                
-                imgLeft = 20;
-                imgTop = 20;
-                currentScale = 1;
-                cropZoomSlider.value = 1;
-                
-                updateImageTransform();
-                cropperOverlay.style.display = "flex"; 
-            };
-            reader.readAsDataURL(file);
+                    // Build standard cropper configuration matching your example image
+                    cropper = new Cropper(cropPreviewImg, {
+                        aspectRatio: 1,         // Locks crop box to 1:1 perfect ratio
+                        viewMode: 1,            // Keeps your image asset strictly bound within layout canvas limits
+                        dragMode: 'move',       // Enables sleek panning/dragging background controls
+                        autoCropArea: 0.75,     // Sizes selection container neatly relative to framework boundaries
+                        restore: false,
+                        guides: false,          // Removes background alignment grid lines
+                        center: false,          // Disables messy center crosshairs
+                        highlight: false,       // Disables internal bright color filters
+                        cropBoxMovable: false,  // Locks the mask center track position in place
+                        cropBoxResizable: false,// Removes corner points resizing handles
+                        toggleDragModeOnDblclick: false,
+                        ready() {
+                            if (cropZoomSlider) {
+                                cropZoomSlider.value = 0; // Baseline slider offset tracking calibration
+                            }
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
 
-    const updateImageTransform = () => {
-        cropPreviewImg.style.transform = `translate(${imgLeft}px, ${imgTop}px) scale(${currentScale})`;
-    };
+    // --- 🎚️ Simple Slider Zoom Listener ---
+    if (cropZoomSlider) {
+        cropZoomSlider.addEventListener("input", (e) => {
+            if (cropper) {
+                const value = parseFloat(e.target.value);
+                // Map range 0-100 smoothly to zoom scales 1.0x through 3.0x
+                const zoomFactor = 1 + (value / 50); 
+                cropper.zoomTo(zoomFactor);
+            }
+        });
+    }
 
-    cropZoomSlider.addEventListener("input", (e) => {
-        currentScale = parseFloat(e.target.value);
-        updateImageTransform();
-    });
+    // --- ✂️ Native Cropper Export Logic Fix ---
+    if (applyCropBtn) {
+        applyCropBtn.addEventListener("click", async () => {
+            if (!cropper) return;
 
-    cropPreviewImg.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        startX = e.clientX - imgLeft;
-        startY = e.clientY - imgTop;
-        e.preventDefault();
-    });
+            // 🎯 Get the clean cropped image canvas directly from Cropper.js API
+            const canvas = cropper.getCroppedCanvas({
+                width: 150,
+                height: 150
+            });
 
-    window.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        imgLeft = e.clientX - startX;
-        imgTop = e.clientY - startY;
-        updateImageTransform();
-    });
+            if (!canvas) return;
 
-    window.addEventListener("mouseup", () => isDragging = false);
+            const croppedBase64 = canvas.toDataURL("image/png");
 
-    // ✂️ Finalize Asset Crop with Loading Animation Connection
-    applyCropBtn.addEventListener("click", () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 160;
-        canvas.height = 160;
-        const ctx = canvas.getContext("2d");
+            // Update user dashboard preview display container
+            if (avatarDisplay) {
+                avatarDisplay.style.backgroundImage = `url(${croppedBase64})`;
+                avatarDisplay.textContent = "";
+            }
 
-        const targetLensSize = 160;
-        const frameW = 450; 
-        const frameH = 280;
-        
-        const targetXInFrame = (frameW - targetLensSize) / 2;
-        const targetYInFrame = (frameH - targetLensSize) / 2;
-
-        const sourceX = (targetXInFrame - imgLeft) / currentScale;
-        const sourceY = (targetYInFrame - imgTop) / currentScale;
-        const sourceSize = targetLensSize / currentScale;
-
-const imgInstance = new Image();
-        imgInstance.src = originalImgBase64;
-        imgInstance.onload = () => {
-            ctx.drawImage(imgInstance, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 160, 160);
-            const processedAvatarBase64 = canvas.toDataURL("image/jpeg", 0.85);
-            
+            // Hide overlay modal and clean up RAM allocations
             cropperOverlay.style.display = "none";
+            cropper.destroy();
+            cropper = null;
 
-            // ⚡ UPDATED: Changed to your real central sync engine with text message parameter
+            // Send base64 asset packet directly to your Cloud Database Node
+            if (spClient) {
+                try {
+                    const { data: { user } } = await spClient.auth.getUser();
+                    if (user) {
+                        const { error } = await spClient.from('profiles').upsert({
+                            id: user.id,
+                            avatar_url: croppedBase64
+                        });
+                        if (error) console.error("Avatar sync error:", error.message);
+                    }
+                } catch (err) {
+                    console.error("Failed uploading profile asset packet:", err);
+                }
+            }
+        });
+    }
+
+    // --- 💾 Profile Identity Manifest Details Save Button ---
+    if (saveBtn) {
+        saveBtn.addEventListener("click", () => {
+            const commitToCloud = async () => {
+                if (!spClient) return;
+
+                try {
+                    const { data: { user } } = await spClient.auth.getUser();
+                    if (!user) return;
+
+                    const nameElements = document.querySelectorAll("#editProfName");
+                    const emailElements = document.querySelectorAll("#editProfEmail");
+
+                    let customName = "";
+                    let customEmail = "";
+
+                    for (let el of nameElements) {
+                        if (el.value.trim() !== "") {
+                            customName = el.value.trim();
+                            break;
+                        }
+                    }
+
+                    for (let el of emailElements) {
+                        if (el.value.trim() !== "") {
+                            customEmail = el.value.trim();
+                            break;
+                        }
+                    }
+
+                    if (!customName) customName = "Apex Studios";
+                    if (!customEmail) customEmail = "admin@apexstudios.dev";
+
+                    const { data, error } = await spClient.from('profiles').upsert({
+                        id: user.id,
+                        profile_name: customName,
+                        profile_email: customEmail
+                    }).select();
+                    
+                    if (error) {
+                        console.error("Database Write Error:", error.message);
+                        if (error.message.includes("unique_profile_name") || error.code === "23505") {
+                            triggerCentralAlert(`<span>⚠️</span> The username "<strong>${customName}</strong>" is already taken! Please choose a different identity manifest.`);
+                            const originalName = topBarUser ? topBarUser.textContent : "Apex Studios";
+                            nameElements.forEach(el => el.value = originalName);
+                        } else {
+                            triggerCentralAlert("<span>❌</span> An unexpected error occurred while syncing your manifest identity.");
+                        }
+                    } else {
+                        triggerCentralAlert("<span>✨</span> Identity Manifest successfully synchronized to the cloud node!");
+                        nameElements.forEach(el => el.value = customName);
+                        emailElements.forEach(el => el.value = customEmail);
+                        if (topBarUser && customName) topBarUser.textContent = customName;
+                    }
+                } catch (err) {
+                    console.error("Error saving profile:", err);
+                }
+            };
+
             if (typeof triggerCentralSync === "function") {
-                triggerCentralSync("Processing Encrypted Asset Configurations", () => {
-                    avatarDisplay.style.backgroundImage = `url('${processedAvatarBase64}')`;
-                    avatarDisplay.textContent = ""; 
-                    localStorage.setItem("gr_studio_avatar", processedAvatarBase64);
+                triggerCentralSync("Syncing Profile Manifest Identity", () => {
+                    commitToCloud();
                 });
             } else {
-                // Fallback direct execution loop if loader script fails to mount
-                avatarDisplay.style.backgroundImage = `url('${processedAvatarBase64}')`;
-                avatarDisplay.textContent = ""; 
-                localStorage.setItem("gr_studio_avatar", processedAvatarBase64);
+                commitToCloud();
             }
-        };
-    });
-
-// Replace your old save button logic inside assets/js/developer.js with this:
-saveBtn.addEventListener("click", () => {
-    const customName = inputName.value.trim() || "Apex Studios";
-    const customEmail = inputEmail.value.trim() || "admin@apexstudios.dev";
-
-    // Calls your real dynamic loading function from loading-screen.js
-    if (typeof triggerCentralSync === "function") {
-        triggerCentralSync("Syncing Profile Manifest Identity", () => {
-            localStorage.setItem("gr_studio_name", customName);
-            localStorage.setItem("gr_studio_email", customEmail);
-            if (topBarUser) topBarUser.textContent = customName;
         });
     }
-});
 
-    closeCropperBtn.addEventListener("click", () => cropperOverlay.style.display = "none");
-    initProfileDataState();
+    if (closeCropperBtn) {
+        closeCropperBtn.addEventListener("click", () => {
+            cropperOverlay.style.display = "none";
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        });
+    }
+    
+    if (spClient) {
+        await initProfileDataState();
+    }
 });

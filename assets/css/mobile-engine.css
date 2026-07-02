@@ -1,0 +1,506 @@
+
+
+/* 1. Hide the mobile hamburger button completely by default (Desktop Mode) */
+.mobile-hamburger-btn {
+    display: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    /* 1. Expand the main page container block to give the chat full screen breathing room */
+    .main-content {
+        padding: 75px 4px 20px 4px !important; /* Minimal left/right padding to stop truncation */
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Break any fixed widths on the view screen panel */
+    #view-messenger,
+    .view-pane,
+    div[class*="messenger-window"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Keep them side-by-side but remove inner spacing limits */
+    div[class*="messenger-split"],
+    div[style*="display: flex"][style*="row"] {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        height: 75vh !important; /* Locks a comfortable visible height window */
+        gap: 4px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 4. Transform Left Contact Sidebar into a sleek, space-saving AVATAR-ONLY strip */
+    div[class*="chat-users"], 
+    div[class*="messenger-sidebar"],
+    div[class*="contacts"] {
+        width: 65px !important; /* Compact fixed narrow width so it doesn't crowd out the text screen */
+        min-width: 65px !important;
+        max-width: 65px !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+        padding: 4px 0 !important;
+        border-right: 1px solid rgba(138, 92, 246, 0.15) !important;
+    }
+
+    /* Hide the text names in the contact sidebar to protect space */
+    div[class*="chat-users"] span,
+    div[class*="chat-users"] p,
+    div[class*="messenger-sidebar"] .user-name,
+    div[class*="contacts"] .contact-name {
+        display: none !important; 
+    }
+
+    /* Center user avatar profile dots perfectly in the mini-strip */
+    div[class*="user-card"], 
+    div[class*="contact-item"] {
+        justify-content: center !important;
+        padding: 8px 0 !important;
+        margin-bottom: 6px !important;
+        width: 100% !important;
+    }
+
+    /* 5. Right Chat Conversation Area: Expand to use 100% of remaining space */
+    div[class*="chat-main"], 
+    div[class*="active-window"], 
+    div[class*="chat-area"] {
+        flex: 1 !important; /* Dynamically takes up every left-over pixel */
+        width: calc(100% - 69px) !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 6. Fluid protection for internal messages to prevent horizontal leakage */
+    div[class*="chat-messages"], 
+    div[class*="body-chat"] {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px !important;
+    }
+
+    /* Force bubbles to scale down dynamically inside the fluid box */
+    div[class*="bubble"], 
+    div[class*="message-item"] {
+        max-width: 88% !important;
+        font-size: 12px !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    /* 7. Fit Footer input form and Send Button cleanly side-by-side */
+    div[class*="input-footer"], 
+    div[class*="chat-input-row"] {
+        width: 100% !important;
+        padding: 6px !important;
+        display: flex !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+    }
+
+    div[class*="input-footer"] input, 
+    div[class*="chat-input-row"] input {
+        flex: 1 !important;
+        width: 100% !important;
+        font-size: 13px !important;
+        padding: 6px 10px !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* ==========================================================================
+   📱 GAMERACK PREMIUM MOBILE ENGINE UI (Modern Glassmorphism)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+    
+    /* 2. Bring it back ONLY when on a mobile screen size */
+    .mobile-hamburger-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 24px !important;
+        height: 18px !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        z-index: 1001 !important;
+    }
+
+    .mobile-hamburger-btn span {
+        display: block !important;
+        width: 100% !important;
+        height: 2.5px !important;
+        background-color: #ffffff !important;
+        border-radius: 4px !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+    
+    /* ... rest of your mobile responsive styles continue below ... */
+}
+
+@media screen and (max-width: 768px) {
+    /* Force the hamburger container block to show up */
+    .mobile-hamburger-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 24px !important;
+        height: 18px !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        z-index: 1001 !important;
+    }
+
+    /* 🎯 DRAW THE 3 SEPARATE SOLID WHITE LINES */
+    .mobile-hamburger-btn span {
+        display: block !important;
+        width: 100% !important;
+        height: 2.5px !important;       /* Makes the lines thick and visible */
+        background-color: #ffffff !important; /* Bold solid white color */
+        border-radius: 4px !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+}
+
+/* ==========================================================================
+   📱 GAMERACK PREMIUM MOBILE ENGINE UI (Modern Glassmorphism)
+   ========================================================================== */
+
+@media screen and (max-width: 768px) {
+    /* 1. Base Document Flow Adjustments */
+    .app-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 80px 14px 40px 14px !important; /* Leaves room for fixed header */
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Top Bar UI Transformation */
+    .top-bar, .ios-top-bar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 64px !important;
+        z-index: 1000 !important;
+        background: rgba(11, 8, 22, 0.85) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        padding: 0 16px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        gap: 12px !important;
+        margin: 0 !important;
+    }
+
+    /* Hide redundant text views inside narrow top headings */
+    .view-title, #currentViewTitle, .search-container {
+        display: none !important; 
+    }
+
+    /* 3. Pure CSS Animated Hamburger Button (3-lines) */
+    .mobile-hamburger-btn {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 22px;
+        height: 16px;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .mobile-hamburger-btn span {
+        width: 100%;
+        height: 2px;
+        background-color: #ffffff;
+        border-radius: 2px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Transform lines into an 'X' close indicator when opened */
+    .mobile-hamburger-btn.active span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-hamburger-btn.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-hamburger-btn.active span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* 4. Slide-Out Sidebar Drawer Overhaul */
+    .sidebar, .ios-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -285px !important; /* Start off-screen */
+        width: 270px !important;
+        height: 100vh !important;
+        z-index: 9999 !important;
+        background: #090713 !important;
+        border-right: 1px solid rgba(138, 92, 246, 0.15) !important;
+        box-shadow: 30px 0 60px rgba(0, 0, 0, 0.85) !important;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 80px 20px 30px 20px !important; /* Top padding protects menu links */
+        box-sizing: border-box !important;
+    }
+
+    /* Move sidebar drawer on-screen */
+    .sidebar.mobile-open, .ios-sidebar.mobile-open {
+        transform: translateX(285px) !important;
+    }
+
+    /* Backdrop Dark Overlay Mask when panel is showing */
+    .sidebar.mobile-open::after, .ios-sidebar.mobile-open::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 270px;
+        width: calc(100vw - 270px);
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+
+    /* 5. Fluid Structural Data Cards */
+    .grid-layout, .overview-grid, .metrics-grid,
+    .grid-layout.cols-2, .grid-layout.cols-3, .grid-layout.cols-4 {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+    }
+
+    .ios-card, .dashboard-card, .panel-card {
+        padding: 18px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+    }
+
+    /* Form stack fixes */
+    .profile-header-meta, .settings-form-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+    }
+
+    .cyber-editable-input, .form-input {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* Clear out body margins pushing things down */
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        top: 0 !important;
+    }
+
+    /* Lock the top header absolute to the very edge */
+    .top-bar, .ios-top-bar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin-top: 0 !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* ... your existing styles ... */
+
+    /* 💬 RESPONSIVE MESSENGER CORE CONTAINER */
+    .messenger-container, 
+    .messenger-window, 
+    .chat-box-wrapper,
+    #view-messenger {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Split layout: Turn side-by-side user lists and chat panels into a vertical stack */
+    .messenger-split-layout,
+    .chat-layout-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+        height: auto !important; /* Prevents desktop heights from locking up scroll */
+    }
+
+    /* Shrink the user chat listing thread panel so it doesn't span endlessly */
+    .chat-users-list, 
+    .messenger-sidebar {
+        width: 100% !important;
+        max-height: 160px !important; /* Keeps it short so you can scroll to the messages */
+        overflow-y: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        padding: 8px !important;
+    }
+
+    /* Expand the main chat window dialogue frame to use all remaining space */
+    .chat-active-window, 
+    .main-chat-area {
+        width: 100% !important;
+        height: 400px !important; /* Fixed viewport height for tight text input tracking */
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Constrain the individual text bubbles so they don't leak past edges */
+    .message-bubble {
+        max-width: 85% !important;
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Make the message input box and send button fit cleanly on one row */
+    .chat-input-row, 
+    .messenger-input-footer {
+        width: 100% !important;
+        padding: 10px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        gap: 8px !important;
+    }
+
+    .chat-input-row input, 
+    .messenger-input-footer textarea {
+        flex: 1 !important;
+        font-size: 14px !important; /* Prevents automatic iOS Safari zoom-on-focus */
+        padding: 8px 12px !important;
+    }
+
+    .chat-send-btn, 
+    .messenger-send-action-btn {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* ... keep your top bar and sidebar burger styles untouched ... */
+
+    /* 💬 PRO-MOBILE SIDE-BY-SIDE CHAT FIX */
+    
+    /* 1. Force the main active chat section wrapper to fit 100% viewport screen width */
+    #view-messenger, 
+    .messenger-container,
+    div[class*="messenger-window"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Maintain the side-by-side layout but adjust widths proportionally */
+    /* Target whatever element holds your chat user list + chat box container */
+    div[class*="messenger-split"], 
+    div[style*="display: flex"][style*="row"] {
+        display: flex !important;
+        flex-direction: row !important; /* Forces side-by-side to stay active */
+        width: 100% !important;
+        height: 70vh !important; /* Set a healthy mobile frame height */
+        gap: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Scale down the left users/contacts list thread panel */
+    div[class*="chat-users"], 
+    div[class*="messenger-sidebar"],
+    div[class*="contacts"] {
+        width: 30% !important; /* Shrink to a compact left strip */
+        min-width: 80px !important;
+        max-width: 110px !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+        border-right: 1px solid rgba(138, 92, 246, 0.2) !important;
+        padding: 4px !important;
+    }
+
+    /* Compact user list cards so text doesn't overflow left panel */
+    div[class*="user-card"], 
+    div[class*="contact-item"] {
+        padding: 6px !important;
+        font-size: 11px !important;
+        flex-direction: column !important; /* Stack avatar and name vertically inside the strip */
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    /* 4. Expand the main right dialogue chat area to fill all remaining room */
+    div[class*="chat-main"], 
+    div[class*="active-window"], 
+    div[class*="chat-area"] {
+        width: 70% !important; /* Balance out the rest of the layout width */
+        flex: 1 !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Fluid protection inside the chat dialogue box */
+    div[class*="chat-messages"], 
+    div[class*="body-chat"] {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding: 10px !important;
+        width: 100% !important;
+    }
+
+    /* Prevent chat bubbles from blowing past the right margin line */
+    div[class*="bubble"], 
+    div[class*="message-item"] {
+        max-width: 90% !important;
+        font-size: 12px !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    /* 6. Lock input toolbar to the bottom of the right side chat view */
+    div[class*="input-footer"], 
+    div[class*="chat-input-row"] {
+        width: 100% !important;
+        padding: 8px !important;
+        display: flex !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+        background: rgba(15, 10, 30, 0.6) !important;
+    }
+
+    div[class*="input-footer"] input, 
+    div[class*="chat-input-row"] input {
+        font-size: 13px !important; /* Standard safe sizing */
+        padding: 6px 10px !important;
+    }
+}
