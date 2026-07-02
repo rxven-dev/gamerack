@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="chat-header" id="msgChatTargetName" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="mobile-back-action" id="mobileChatBackBtn">
-                        <svg viewBox="0 0 24 24" fill="none; stroke:currentColor; stroke-width:2.5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                         </svg>
                     </div>
@@ -94,19 +94,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     // CSS Injector extension for reaction pills and utility modules
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `
-        .chat-bubble-wrapper { position: relative; display: flex !important; flex-direction: column; max-width: 75%; margin-bottom: 4px; width: auto; }
-        .chat-bubble-wrapper.outgoing { align-self: flex-end !important; align-items: flex-end !important; }
-        .chat-bubble-wrapper.incoming { align-self: flex-start !important; align-items: flex-start !important; }
-        .chat-bubble { display: inline-block !important; width: auto !important; max-width: 100% !important; word-break: break-word; white-space: pre-wrap; }
+        .chat-bubble-wrapper { position: relative; display: block !important; max-width: 75%; margin-bottom: 4px; width: fit-content !important; }
+        .chat-bubble-wrapper.outgoing { margin-left: auto !important; margin-right: 0 !important; }
+        .chat-bubble-wrapper.incoming { margin-right: auto !important; margin-left: 0 !important; }
+        .chat-bubble { display: block !important; width: fit-content !important; max-width: 100% !important; overflow-wrap: break-word; word-break: normal; white-space: pre-wrap; text-align: left; }
         .reaction-trigger-panel { display: none; position: absolute; top: -28px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2px 6px; gap: 4px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .chat-bubble-wrapper:hover .reaction-trigger-panel { display: flex; }
         .chat-bubble-wrapper.outgoing .reaction-trigger-panel { right: 0; }
         .chat-bubble-wrapper.incoming .reaction-trigger-panel { left: 0; }
         .react-emoji-btn { background: none; border: none; padding: 0 2px; cursor: pointer; font-size: 14px; transition: transform 0.1s; }
         .react-emoji-btn:hover { transform: scale(1.3); }
-        .bubble-reaction-badge { position: absolute; bottom: -10px; background: #2a2b3d; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 1px 5px; font-size: 11px; display: flex; gap: 2px; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 5; }
-        .chat-bubble-wrapper.outgoing .bubble-reaction-badge { right: 10px; }
-        .chat-bubble-wrapper.incoming .bubble-reaction-badge { left: 10px; }
+        
+        .bubble-reaction-badge { position: relative; margin-top: 4px; font-size: 12px; color: #94a3b8; display: flex; gap: 4px; align-items: center; z-index: 5; background: none !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+        .chat-bubble-wrapper.outgoing .bubble-reaction-badge { justify-content: flex-end; text-align: right; }
+        .chat-bubble-wrapper.incoming .bubble-reaction-badge { justify-content: flex-start; text-align: left; }
+        
         .chat-attached-img { max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 4px; display: block; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .chat-attach-btn:hover { color: #8b5cf6 !important; }
     `;
@@ -246,7 +248,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         inputField.placeholder = `Message ${currentlySelectedUser.name}...`;
         sendButton.disabled = false;
 
-        // Kept layout structure intact with back arrow elements
         chatTitle.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div class="mobile-back-action" id="mobileChatBackBtn">
@@ -258,7 +259,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `;
         
-        // 🔄 MATCHED EXACTLY: sender_id, recipient_id
         const { data: dbMessages, error } = await spClient
             .from('messages')
             .select('*')
@@ -292,7 +292,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const bubble = document.createElement('div');
             bubble.className = `chat-bubble ${isOutgoing ? 'outgoing' : 'incoming'}`;
             
-            // 🔄 MATCHED EXACTLY: message_text
             if (msg.message_text) {
                 bubble.textContent = msg.message_text;
             }
@@ -324,7 +323,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const text = inputField.value.trim();
         if (!text || !currentlySelectedUser) return;
 
-        // 🔄 MATCHED EXACTLY: recipient_id, message_text
         const { error } = await spClient
             .from('messages')
             .insert({
@@ -355,7 +353,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const fileExt = file.name.split('.').pop();
         const pathFileName = `${sessionUserId}/${Date.now()}.${fileExt}`;
 
-        // Upload to storage bucket
         const { data: storageData, error: uploadErr } = await spClient.storage
             .from('messages_bucket')
             .upload(pathFileName, file, { cacheControl: '3600', upsert: true });
@@ -369,13 +366,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             .from('messages_bucket')
             .getPublicUrl(pathFileName);
 
-        // 🔄 REPAIRED HERE: Swapped message_content back to message_text
         const { error: dbErr } = await spClient
             .from('messages')
             .insert({
                 sender_id: sessionUserId,
                 recipient_id: currentlySelectedUser.user_uuid,
-                message_text: '', // 👈 Fixed column target name match
+                message_text: '', 
                 file_url: publicUrl
             });
 
@@ -434,35 +430,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     attachButton.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleImageUpload);
 
-    /* ==================================================================
-       🚀 MOBILE PAGE-FLIP NAVIGATION ENGINE ROUTER
-       ================================================================== */
-    
-    // 1. When an online user row container item is clicked, slide in Screen 2 (Chat box view)
     body.addEventListener('click', (e) => {
         const selectedUserRow = e.target.closest('.user-row');
         if (selectedUserRow) {
-            // Check if we are running inside mobile layout widths
             if (window.innerWidth <= 768) {
                 panel.classList.add('user-is-selected');
             }
         }
     });
 
-    // Target the specific close button located inside the active chat header
     body.addEventListener('click', (e) => {
-        // Find the specific button using e.target.closest to catch clicks on child text nodes
         if (e.target.closest('#chatCloseXBtn')) {
             e.preventDefault();
             e.stopPropagation();
-            // Close the main messenger frame context
             panel.classList.remove('active');
-            // Clean up the routing state so that it returns to Screen 1 upon reopening
             panel.classList.remove('user-is-selected'); 
         }
     });
 
-    // 3. Tapping the chat header title back arrow slides Screen 2 away to return to Screen 1
     body.addEventListener('click', (e) => {
         if (e.target.closest('#mobileChatBackBtn')) {
             e.preventDefault();
@@ -473,7 +458,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // 4. Added new listener for your "Back to Apps" button to shut the view cleanly
     body.addEventListener('click', (e) => {
         if (e.target.closest('#sidebarBackToAppsBtn')) {
             e.preventDefault();

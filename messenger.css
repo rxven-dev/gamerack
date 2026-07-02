@@ -1,5 +1,5 @@
 /* ==========================================================================
-   🌐 NATIVE DASHBOARD CHAT SYSTEM (UNIFIED DESIGN - DESKTOP FIRST)
+   💬 NATIVE DASHBOARD CHAT SYSTEM (UNIFIED DESIGN - DESKTOP FIRST)
    ========================================================================== */
 
 /* Launcher Overlay Icon Toggle Button */
@@ -50,6 +50,25 @@
     overflow: hidden !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+}
+
+/* --- Custom Scrollbar Styling to match Website Theme --- */
+.chat-history::-webkit-scrollbar,
+.nested-page-container::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-history::-webkit-scrollbar-track,
+.nested-page-container::-webkit-scrollbar-track {
+    background: #0f111a;
+}
+.chat-history::-webkit-scrollbar-thumb,
+.nested-page-container::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.4);
+    border-radius: 20px;
+}
+.chat-history::-webkit-scrollbar-thumb:hover,
+.nested-page-container::-webkit-scrollbar-thumb:hover {
+    background: #8b5cf6;
 }
 
 /* --- Left Application Contacts Sidebar --- */
@@ -300,6 +319,7 @@
         border: none !important;
         border-radius: 0px !important;
         z-index: 999999 !important;
+        overflow: hidden !important; 
     }
 
     .msg-sidebar, 
@@ -318,6 +338,7 @@
         padding: 16px !important;
         background: #0f111a !important;
         display: flex !important;
+        flex-direction: column !important;
         transform: translateX(0) !important;
         opacity: 1 !important;
         visibility: visible !important;
@@ -340,6 +361,8 @@
     }
     .nested-page-container {
         padding: 0 !important;
+        flex: 1 !important;
+        overflow-y: auto !important;
     }
     .user-row {
         background: rgba(255, 255, 255, 0.03) !important;
@@ -378,7 +401,7 @@
         pointer-events: auto !important;
     }
 
-    /* Beautiful, roomier Header styling to avoid crowding */
+    /* Roomy Header styling */
     .chat-header {
         padding: 0 16px !important;
         background: #141622 !important;
@@ -391,7 +414,7 @@
         justify-content: space-between !important;
     }
 
-    /* 🌟 Fixed Back arrow navigation button styles */
+    /* Back arrow navigation button styles */
     .mobile-back-action {
         display: flex !important;
         align-items: center !important;
@@ -412,22 +435,22 @@
         color: #8b5cf6 !important;
     }
 
-@media screen and (max-width: 768px) {
+    /* Fully self-contained scrolling view inside layout space */
     .chat-history {
-        /* Adjusting padding down to 16px preserves screen width on phones */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
         padding: 16px !important; 
-        
-        /* Forces extra scrolling breathing room so items don't hide under the keyboard/input row */
-        padding-bottom: 32px !important; 
-        
-        /* Essential layout protection rule for mobile scroll view boxes */
-        min-height: 0 !important; 
-        
-        /* Smooth Inertia physics engine configuration for iOS Safari/Android WebViews */
+        padding-bottom: 24px !important; 
+        flex: 1 !important;                 
+        overflow-y: auto !important;         
+        min-height: 0 !important;            
+        width: 100% !important;
+        box-sizing: border-box !important;
         scroll-behavior: smooth !important;
         -webkit-overflow-scrolling: touch !important; 
     }
-}
+
     .chat-input-row {
         position: relative !important;
         margin-top: auto !important;
@@ -445,102 +468,37 @@
         border-radius: 24px !important;
         padding: 10px 16px !important;
     }
-}
-
-/* ==========================================================================
-   📱 MOBILE OVERRIDES (Inside your @media screen and (max-width: 768px) block)
-   ========================================================================== */
-@media screen and (max-width: 768px) {
-    
-    /* 1. Ensure the history container uses full-width flex layout but doesn't squash children */
-    .chat-history {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 16px !important;
-        padding: 16px !important;
-        overflow-y: auto !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 2. CRITICAL FIX: Force wrappers to align horizontally instead of stretching 100% */
-    .chat-bubble-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        max-width: 75% !important; /* Locks message box from taking full screen width */
-        width: auto !important;
-        clear: both !important;
-    }
-
-    /* 3. Push your outgoing wrappers to the right side */
-    .chat-bubble-wrapper.outgoing {
-        align-self: flex-end !important;
-        align-items: flex-end !important;
-    }
-
-    /* 4. Keep your incoming wrappers on the left side */
-    .chat-bubble-wrapper.incoming {
-        align-self: flex-start !important;
-        align-items: flex-start !important;
-    }
-
-    /* 5. Make the visible bubble scale naturally to match the text content */
-    .chat-bubble {
-        display: inline-block !important;
-        width: auto !important;
-        max-width: 100% !important;
-        word-break: break-word !important;
-        white-space: pre-wrap !important;
-        padding: 10px 14px !important;
-    }
-}
-
-/* ==========================================================================
-   📱 MOBILE OVERRIDES (Add inside your @media screen and (max-width: 768px) block)
-   ========================================================================== */
-@media screen and (max-width: 768px) {
-    
-    /* Forces the chat log box to act as a proper vertical stack */
-    .chat-history {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 16px !important;
-        padding: 16px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
 
     /* Keeps bubble wrappers locked at a natural conversational paragraph width */
     .chat-bubble-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        max-width: 75% !important; /* Prevents the text box from filling the whole screen */
-        width: auto !important;
+        display: block !important; /* 🌟 FIX: Force block context to prevent width starvation */
+        max-width: 75% !important; 
+        width: fit-content !important;
+        margin-bottom: 4px !important;
     }
 
     /* Pushes your outgoing bubbles completely to the right side */
     .chat-bubble-wrapper.outgoing {
-        align-self: flex-end !important;
-        align-items: flex-end !important;
+        margin-left: auto !important; /* 🌟 FIX: Native alignment swap for blocks */
+        margin-right: 0 !important;
     }
 
     /* Keeps incoming friend bubbles cleanly on the left side */
     .chat-bubble-wrapper.incoming {
-        align-self: flex-start !important;
-        align-items: flex-start !important;
+        margin-right: auto !important; /* 🌟 FIX: Native alignment swap for blocks */
+        margin-left: 0 !important;
     }
 
-.chat-bubble {
-        display: inline-block !important;
-        width: auto !important;
+    .chat-bubble {
+        display: block !important;    
+        width: fit-content !important; 
         max-width: 100% !important;
         padding: 12px 16px !important;
         font-size: 14px !important;
         line-height: 1.5 !important;
-        word-break: break-word !important;
+        word-break: normal !important; 
+        overflow-wrap: break-word !important;
         white-space: pre-wrap !important;
-        
-        /* 🎯 THIS FIXES THE WORD PLACEMENT: */
-        text-align: left !important; /* Forces text to start from the left inside the bubble */
+        text-align: left !important; 
     }
 }
